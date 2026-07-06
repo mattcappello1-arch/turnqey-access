@@ -16,20 +16,21 @@ export default async function GuestsPage() {
   const { org } = await requireAuth();
   const admin = createAdminClient();
 
-  const { data: sites } = await admin.schema("enterprise").from("sites").select("id,name").eq("org_id", org.id);
-  const siteIds = (sites ?? []).map(s => s.id);
+  const { data: sites } = await admin.rpc("get_enterprise_sites", { p_org_id: org.id });
+  const siteIds = (sites ?? []).map((s: { id: string }) => s.id);
 
   const [{ data: stays }, { data: zones }] = await Promise.all([
     siteIds.length > 0
-      ? admin.schema("enterprise").from("guest_stays").select("*").in("site_id", siteIds).order("check_in", { ascending: false }).limit(100)
+      ? admin.rpc("get_enterprise_guest_stays", { p_site_ids: siteIds, p_statuses: ["upcoming", "checked_in", "checked_out", "cancelled", "no_show"] })
       : Promise.resolve({ data: [] }),
     siteIds.length > 0
-      ? admin.schema("enterprise").from("zones").select("id,name,unit_number").in("site_id", siteIds).eq("zone_type", "room")
+      ? admin.rpc("get_enterprise_zones", { p_site_ids: siteIds })
       : Promise.resolve({ data: [] }),
   ]);
 
   const stayList = (stays ?? []) as GuestStay[];
-  const zoneMap = new Map((zones ?? []).map((z: { id: string; name: string; unit_number: string | null }) => [z.id, z.unit_number || z.name]));
+  const roomZones = (zones ?? []).filter((z: { zone_type: string }) => z.zone_type === "room");
+  const zoneMap = new Map(roomZones.map((z: { id: string; name: string; unit_number: string | null }) => [z.id, z.unit_number || z.name]));
   const siteMap = new Map((sites ?? []).map(s => [s.id, s.name]));
 
   const activeStays = stayList.filter(s => s.status === "checked_in");

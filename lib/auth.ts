@@ -17,31 +17,18 @@ export async function requireAuth(): Promise<AuthContext> {
 
   const admin = createAdminClient();
 
-  // Find org membership
-  const { data: member } = await admin
-    .schema("enterprise")
-    .from("org_members")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("active", true)
-    .limit(1)
-    .maybeSingle();
-
+  const { data: memberRows } = await admin.rpc("get_org_member", { p_user_id: user.id });
+  const member = memberRows?.[0] as OrgMember | undefined;
   if (!member) redirect("/login?error=no_org");
 
-  const { data: org } = await admin
-    .schema("enterprise")
-    .from("organizations")
-    .select("*")
-    .eq("id", member.org_id)
-    .single();
-
+  const { data: orgRows } = await admin.rpc("get_organization", { p_org_id: member.org_id });
+  const org = orgRows?.[0] as Organization | undefined;
   if (!org) redirect("/login?error=no_org");
 
   return {
     userId: user.id,
     email: user.email ?? "",
-    org: org as Organization,
-    member: member as OrgMember,
+    org,
+    member,
   };
 }

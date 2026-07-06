@@ -9,15 +9,18 @@ export default async function OverviewPage() {
   const admin = createAdminClient();
 
   // Get sites for this org
-  const { data: sites } = await admin.schema("enterprise").from("sites").select("id,name,property_id").eq("org_id", org.id);
-  const propertyIds = (sites ?? []).map(s => s.property_id);
+  const { data: sites } = await admin.rpc("get_enterprise_sites", { p_org_id: org.id });
+  const propertyIds = (sites ?? []).map((s: { property_id: string }) => s.property_id);
+  const siteIds = (sites ?? []).map((s: { id: string }) => s.id);
 
   // Get locks and guest stays
   const [{ data: locks }, { data: stays }] = await Promise.all([
     propertyIds.length > 0
       ? admin.from("locks").select("id,name,unit_label,is_locked,is_online,battery_level,property_id").in("property_id", propertyIds)
       : Promise.resolve({ data: [] }),
-    admin.schema("enterprise").from("guest_stays").select("*").in("site_id", (sites ?? []).map(s => s.id)).in("status", ["upcoming", "checked_in"]).order("check_in"),
+    siteIds.length > 0
+      ? admin.rpc("get_enterprise_guest_stays", { p_site_ids: siteIds, p_statuses: ["upcoming", "checked_in"] })
+      : Promise.resolve({ data: [] }),
   ]);
 
   const lockList = (locks ?? []) as Lock[];

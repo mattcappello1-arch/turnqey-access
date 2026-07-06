@@ -8,7 +8,7 @@ export default async function LocksPage() {
   const { org } = await requireAuth();
   const admin = createAdminClient();
 
-  const { data: sites } = await admin.schema("enterprise").from("sites").select("id,name,property_id").eq("org_id", org.id);
+  const { data: sites } = await admin.rpc("get_enterprise_sites", { p_org_id: org.id });
   const propertyIds = (sites ?? []).map(s => s.property_id);
 
   const { data: locks } = propertyIds.length > 0
