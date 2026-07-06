@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #F7F5F0;
+  --surface: #FFFFFF;
+  --ink: #0A0A0B;
+  --graphite: #3A3A3D;
+  --slate: #8A8A8E;
+  --hairline: #E8E6E1;
+  --signal: #0A6E3B;
+  --caution: #8A3324;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--graphite);
+  -webkit-font-smoothing: antialiased;
+}
+
+@theme inline {
+  --color-bg: #F7F5F0;
+  --color-surface: #FFFFFF;
+  --color-ink: #0A0A0B;
+  --color-graphite: #3A3A3D;
+  --color-slate: #8A8A8E;
+  --color-hairline: #E8E6E1;
+  --color-signal: #0A6E3B;
+  --color-caution: #8A3324;
+}
