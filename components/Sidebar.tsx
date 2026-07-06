@@ -96,11 +96,8 @@ export function Sidebar({ orgName, role, userEmail }: { orgName: string; role: E
                   }}
                 >
                   {active && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full" style={{ background: "#0A6E3B" }} />}
-                  <span style={{ opacity: active ? 1 : 0.6 }}>{item.icon}</span>
-                  <div>
-                    <span style={{ display: "block", lineHeight: 1.2 }}>{item.label}</span>
-                    <span style={{ display: "block", fontSize: 10, color: "#8A8A8E", lineHeight: 1.2, marginTop: 1, opacity: active ? 1 : 0 }} className="group-hover:opacity-100 transition-opacity">{item.desc}</span>
-                  </div>
+                  <span style={{ opacity: active ? 1 : 0.6, flexShrink: 0 }}>{item.icon}</span>
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
