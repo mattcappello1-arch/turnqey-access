@@ -9,14 +9,14 @@ export default async function LocksPage() {
   const admin = createAdminClient();
 
   const { data: sites } = await admin.rpc("get_enterprise_sites", { p_org_id: org.id });
-  const propertyIds = (sites ?? []).map(s => s.property_id);
+  const propertyIds = (sites ?? []).map((s: { property_id: string }) => s.property_id);
 
   const { data: locks } = propertyIds.length > 0
     ? await admin.from("locks").select("id,name,unit_label,is_locked,is_online,battery_level,manufacturer,model,last_synced_at,property_id").in("property_id", propertyIds).order("name")
     : { data: [] };
 
   const lockList = (locks ?? []) as (Lock & { manufacturer: string | null; model: string | null; last_synced_at: string | null })[];
-  const siteMap = new Map((sites ?? []).map(s => [s.property_id, s.name]));
+  const siteMap = new Map((sites ?? []).map((s: { property_id: string; name: string }) => [s.property_id, s.name]));
 
   const online = lockList.filter(l => l.is_online !== false).length;
   const locked = lockList.filter(l => l.is_locked === true).length;
@@ -55,7 +55,7 @@ export default async function LocksPage() {
             const batPct = lock.battery_level !== null ? Math.round(lock.battery_level * 100) : null;
             const isOffline = lock.is_online === false;
             const isLow = batPct !== null && batPct < 20;
-            const siteName = siteMap.get(lock.property_id) || "";
+            const siteName = (siteMap.get(lock.property_id) as string | undefined) || "";
 
             return (
               <div key={lock.id} style={{

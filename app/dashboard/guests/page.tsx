@@ -31,15 +31,15 @@ export default async function GuestsPage() {
   const stayList = (stays ?? []) as GuestStay[];
   const roomZones = (zones ?? []).filter((z: { zone_type: string }) => z.zone_type === "room");
   const zoneMap = new Map(roomZones.map((z: { id: string; name: string; unit_number: string | null }) => [z.id, z.unit_number || z.name]));
-  const siteMap = new Map((sites ?? []).map(s => [s.id, s.name]));
+  const siteMap = new Map((sites ?? []).map((s: { id: string; name: string }) => [s.id, s.name]));
 
   const activeStays = stayList.filter(s => s.status === "checked_in");
   const upcomingStays = stayList.filter(s => s.status === "upcoming");
   const pastStays = stayList.filter(s => ["checked_out", "cancelled", "no_show"].includes(s.status));
 
   function StayRow({ stay }: { stay: GuestStay }) {
-    const room = stay.room_zone_id ? zoneMap.get(stay.room_zone_id) : null;
-    const site = siteMap.get(stay.site_id) || "";
+    const room = stay.room_zone_id ? (zoneMap.get(stay.room_zone_id) as string | undefined) : null;
+    const site = (siteMap.get(stay.site_id) as string | undefined) || "";
     const style = STATUS_STYLES[stay.status] || STATUS_STYLES.upcoming;
     const checkIn = new Date(stay.check_in);
     const checkOut = new Date(stay.check_out);
