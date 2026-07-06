@@ -1,6 +1,8 @@
 import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { GuestStay, Zone } from "@/lib/types";
+import type { GuestStay } from "@/lib/types";
+import { GuestStatusButton, DeleteStayButton } from "./GuestActions";
+import { AddGuestForm } from "./AddGuestForm";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +31,9 @@ export default async function GuestsPage() {
   ]);
 
   const stayList = (stays ?? []) as GuestStay[];
-  const roomZones = (zones ?? []).filter((z: { zone_type: string }) => z.zone_type === "room");
-  const zoneMap = new Map(roomZones.map((z: { id: string; name: string; unit_number: string | null }) => [z.id, z.unit_number || z.name]));
+  const allZones = (zones ?? []) as { id: string; name: string; unit_number: string | null; site_id: string; zone_type: string }[];
+  const roomZones = allZones.filter(z => z.zone_type === "room");
+  const zoneMap = new Map(roomZones.map(z => [z.id, z.unit_number || z.name]));
   const siteMap = new Map((sites ?? []).map((s: { id: string; name: string }) => [s.id, s.name]));
 
   const activeStays = stayList.filter(s => s.status === "checked_in");
@@ -55,8 +58,12 @@ export default async function GuestsPage() {
             {room && <span>Room {room} · </span>}
             {site} · {checkIn.toLocaleDateString("en-AU", { day: "numeric", month: "short" })} to {checkOut.toLocaleDateString("en-AU", { day: "numeric", month: "short" })}
           </div>
+          {stay.notes && <div style={{ fontSize: 11, color: "#8A8A8E", marginTop: 4 }}>{stay.notes}</div>}
         </div>
-        {stay.guest_email && <span style={{ fontSize: 12, color: "#8A8A8E" }}>{stay.guest_email}</span>}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <GuestStatusButton stayId={stay.id} currentStatus={stay.status} />
+          <DeleteStayButton stayId={stay.id} />
+        </div>
       </div>
     );
   }
@@ -67,6 +74,11 @@ export default async function GuestsPage() {
         <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Guests</h1>
         <p style={{ fontSize: 14, color: "#8A8A8E" }}>{activeStays.length} in-house · {upcomingStays.length} upcoming</p>
       </div>
+
+      <AddGuestForm
+        sites={(sites ?? []).map((s: { id: string; name: string }) => ({ id: s.id, name: s.name }))}
+        zones={allZones}
+      />
 
       {/* In-house */}
       <div style={{ marginBottom: 32 }}>
