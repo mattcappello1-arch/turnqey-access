@@ -50,7 +50,7 @@ export default async function LocksPage() {
           No locks connected yet. Add locks via the Turnqey dashboard, then assign them to zones here.
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
+        <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
           {lockList.map(lock => {
             const batPct = lock.battery_level !== null ? Math.round(lock.battery_level * 100) : null;
             const isOffline = lock.is_online === false;
@@ -58,7 +58,7 @@ export default async function LocksPage() {
             const siteName = (siteMap.get(lock.property_id) as string | undefined) || "";
 
             return (
-              <div key={lock.id} style={{
+              <div key={lock.id} className="card-hover" style={{
                 padding: "16px 14px", background: "#FFFFFF", border: `1px solid ${isOffline ? "#8A332430" : "#E8E6E1"}`,
                 borderRadius: 14, display: "flex", flexDirection: "column", gap: 8,
                 opacity: isOffline ? 0.6 : 1,

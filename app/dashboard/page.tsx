@@ -48,14 +48,14 @@ export default async function OverviewPage() {
       </div>
 
       {/* Quick actions */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 28 }}>
+      <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 28 }}>
         {[
           { label: "New guest stay", href: "/dashboard/guests", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg> },
           { label: "Issue visitor pass", href: "/dashboard/visitors", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 8h10M7 12h6" /></svg> },
           { label: "View all locks", href: "/dashboard/locks", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg> },
           { label: "Manage zones", href: "/dashboard/zones", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg> },
         ].map(a => (
-          <Link key={a.label} href={a.href} style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 12, textDecoration: "none", color: "#3A3A3D", fontSize: 13, fontWeight: 500, transition: "border-color 0.15s" }}>
+          <Link key={a.label} href={a.href} className="card-hover" style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 12, textDecoration: "none", color: "#3A3A3D", fontSize: 13, fontWeight: 500 }}>
             <span style={{ color: "#8A8A8E" }}>{a.icon}</span>
             {a.label}
           </Link>
@@ -63,7 +63,7 @@ export default async function OverviewPage() {
       </div>
 
       {/* Stats grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 32 }}>
+      <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 32 }}>
         {[
           { val: totalLocks, label: "Locks", sub: `${onlineLocks} online`, href: "/dashboard/locks" },
           { val: lockedCount, label: "Locked", sub: `${totalLocks - lockedCount} unlocked` },
@@ -72,7 +72,7 @@ export default async function OverviewPage() {
           { val: currentGuests.length, label: "In-house", href: "/dashboard/guests" },
         ].map(s => {
           const inner = (
-            <div style={{ padding: "18px 16px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, textAlign: "center" }}>
+            <div className="stat-card" style={{ padding: "18px 16px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, textAlign: "center" }}>
               <div style={{ fontSize: 26, fontWeight: 300, letterSpacing: -1, color: s.warn ? "#8A3324" : "#0A0A0B" }}>{s.val}</div>
               <div style={{ fontSize: 11, color: "#8A8A8E", marginTop: 2 }}>{s.label}</div>
               {s.sub && <div style={{ fontSize: 10, color: "#8A8A8E", marginTop: 1 }}>{s.sub}</div>}
@@ -161,11 +161,11 @@ export default async function OverviewPage() {
             <h2 style={{ fontSize: 15, fontWeight: 500, color: "#0A0A0B" }}>Currently in-house ({currentGuests.length})</h2>
             <Link href="/dashboard/guests" style={{ fontSize: 12, color: "#8A8A8E", textDecoration: "none" }}>View all</Link>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+          <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
             {currentGuests.slice(0, 8).map(stay => {
               const roomZone = stay.room_zone_id ? zoneList.find(z => z.id === stay.room_zone_id) : null;
               return (
-                <div key={stay.id} style={{ padding: "14px 16px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 12 }}>
+                <div key={stay.id} className="card-hover" style={{ padding: "14px 16px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 12 }}>
                   <div style={{ fontSize: 13, fontWeight: 500, color: "#0A0A0B", marginBottom: 2 }}>{stay.guest_name}</div>
                   {roomZone && <div style={{ fontSize: 11, color: "#8A8A8E" }}>Room {roomZone.unit_number || roomZone.name}</div>}
                   <div style={{ fontSize: 10, color: "#8A8A8E", marginTop: 4 }}>

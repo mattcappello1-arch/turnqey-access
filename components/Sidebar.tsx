@@ -88,7 +88,7 @@ export function Sidebar({ orgName, role, userEmail }: { orgName: string; role: E
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 group"
+                  className="nav-item relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm group"
                   style={{
                     background: active ? "rgba(10,10,11,0.06)" : "transparent",
                     color: active ? "#0A0A0B" : "#8A8A8E",

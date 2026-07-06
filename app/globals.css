@@ -28,3 +28,178 @@ body {
   --color-signal: #0A6E3B;
   --color-caution: #8A3324;
 }
+
+/* ── Page transitions ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(10, 110, 59, 0.15); }
+  50% { box-shadow: 0 0 0 6px rgba(10, 110, 59, 0); }
+}
+
+/* ── Staggered page entrance ── */
+main > div > * {
+  animation: fadeIn 0.5s ease both;
+}
+main > div > *:nth-child(1) { animation-delay: 0s; }
+main > div > *:nth-child(2) { animation-delay: 0.05s; }
+main > div > *:nth-child(3) { animation-delay: 0.1s; }
+main > div > *:nth-child(4) { animation-delay: 0.15s; }
+main > div > *:nth-child(5) { animation-delay: 0.2s; }
+main > div > *:nth-child(6) { animation-delay: 0.25s; }
+
+/* ── Interactive cards ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  border-color: #D0CEC9;
+}
+.card-hover:active {
+  transform: translateY(0);
+}
+
+/* ── Stat cards ── */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+/* ── Buttons ── */
+.btn-animate {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-animate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.btn-animate:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ── List rows ── */
+.list-row {
+  transition: background-color 0.15s ease;
+}
+.list-row:hover {
+  background-color: rgba(247, 245, 240, 0.6);
+}
+
+/* ── Status badges ── */
+.badge-pulse {
+  animation: pulseGlow 2s ease infinite;
+}
+
+/* ── Sidebar nav items ── */
+.nav-item {
+  transition: all 0.15s ease;
+}
+.nav-item:hover {
+  background: rgba(10, 10, 11, 0.04);
+}
+
+/* ── Form inputs ── */
+input, select, textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #0A0A0B;
+  box-shadow: 0 0 0 3px rgba(10, 10, 11, 0.04);
+}
+
+/* ── Grid items stagger ── */
+.grid-stagger > * {
+  animation: scaleIn 0.4s ease both;
+}
+.grid-stagger > *:nth-child(1) { animation-delay: 0s; }
+.grid-stagger > *:nth-child(2) { animation-delay: 0.03s; }
+.grid-stagger > *:nth-child(3) { animation-delay: 0.06s; }
+.grid-stagger > *:nth-child(4) { animation-delay: 0.09s; }
+.grid-stagger > *:nth-child(5) { animation-delay: 0.12s; }
+.grid-stagger > *:nth-child(6) { animation-delay: 0.15s; }
+.grid-stagger > *:nth-child(7) { animation-delay: 0.18s; }
+.grid-stagger > *:nth-child(8) { animation-delay: 0.21s; }
+.grid-stagger > *:nth-child(n+9) { animation-delay: 0.24s; }
+
+/* ── Smooth scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #E8E6E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #D0CEC9; }
+
+/* ── Section dividers ── */
+.section-fade {
+  position: relative;
+}
+.section-fade::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #E8E6E1 20%, #E8E6E1 80%, transparent);
+}
+
+/* ── Tooltips ── */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 4px 10px;
+  background: #0A0A0B;
+  color: #F7F5F0;
+  font-size: 11px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+}
+[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Loading skeleton ── */
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #E8E6E1 0px, #F0EEE9 40px, #E8E6E1 80px);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}

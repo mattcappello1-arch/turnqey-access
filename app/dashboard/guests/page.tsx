@@ -48,7 +48,7 @@ export default async function GuestsPage() {
     const checkOut = new Date(stay.check_out);
 
     return (
-      <div style={{ padding: "14px 18px", borderBottom: "1px solid #E8E6E1", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+      <div className="list-row" style={{ padding: "14px 18px", borderBottom: "1px solid #E8E6E1", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 14, fontWeight: 500, color: "#0A0A0B" }}>{stay.guest_name}</span>
