@@ -38,14 +38,41 @@ export default async function OverviewPage() {
   const roomCount = zoneList.filter(z => z.zone_type === "room").length;
 
   const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
+  const isEmpty = totalLocks === 0 && stayList.length === 0 && zoneList.length === 0;
 
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
+      <div style={{ marginBottom: isEmpty ? 16 : 32 }}>
         <h1 style={{ fontSize: 28, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>{greeting}</h1>
         <p style={{ fontSize: 14, color: "#8A8A8E" }}>{org.name} · {(sites ?? []).length} site{(sites ?? []).length !== 1 ? "s" : ""} · {roomCount} rooms · {totalLocks} locks</p>
       </div>
+
+      {/* Onboarding checklist for empty orgs */}
+      {isEmpty && (
+        <div style={{ padding: 28, background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 16, marginBottom: 28 }}>
+          <div style={{ fontSize: 17, fontWeight: 500, color: "#0A0A0B", marginBottom: 4 }}>Get started</div>
+          <div style={{ fontSize: 13, color: "#8A8A8E", marginBottom: 20 }}>Set up your property in a few steps.</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {[
+              { done: (sites ?? []).length > 0, label: "Add a site", desc: "Link a property from your Turnqey account.", href: "/dashboard/settings" },
+              { done: zoneList.length > 0, label: "Create zones", desc: "Set up rooms, common areas, and floors.", href: "/dashboard/zones" },
+              { done: totalLocks > 0, label: "Connect locks", desc: "Add locks via turnqey.com.au, then assign them to zones.", href: "/dashboard/locks" },
+              { done: stayList.length > 0, label: "Add your first guest", desc: "Create a guest stay and generate access.", href: "/dashboard/guests" },
+            ].map(step => (
+              <Link key={step.label} href={step.href} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: step.done ? "rgba(10,110,59,0.04)" : "#F7F5F0", border: `1px solid ${step.done ? "rgba(10,110,59,0.15)" : "#E8E6E1"}`, borderRadius: 12, textDecoration: "none" }}>
+                <div style={{ width: 24, height: 24, borderRadius: "50%", border: `2px solid ${step.done ? "#0A6E3B" : "#E8E6E1"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: step.done ? "#0A6E3B" : "transparent" }}>
+                  {step.done && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: step.done ? "#0A6E3B" : "#0A0A0B" }}>{step.label}</div>
+                  <div style={{ fontSize: 12, color: "#8A8A8E" }}>{step.desc}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quick actions */}
       <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 28 }}>

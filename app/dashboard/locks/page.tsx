@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Lock } from "@/lib/types";
+import { LockControl } from "./LockControl";
 
 export const dynamic = "force-dynamic";
 
@@ -82,6 +83,10 @@ export default async function LocksPage() {
                     {batPct}% battery
                   </div>
                 )}
+
+                <div style={{ marginTop: 4 }}>
+                  <LockControl lockId={lock.id} isLocked={lock.is_locked} isOnline={lock.is_online} />
+                </div>
               </div>
             );
           })}
