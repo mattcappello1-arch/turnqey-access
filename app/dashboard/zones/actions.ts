@@ -76,3 +76,17 @@ export async function deleteZone(formData: FormData): Promise<ActionResult> {
   revalidatePath("/dashboard/zones");
   return {};
 }
+
+export async function assignLockToZone(zoneId: string, lockId: string) {
+  await requireAuth();
+  const admin = createAdminClient();
+  await admin.rpc("assign_lock_to_zone", { p_zone_id: zoneId, p_lock_id: lockId });
+  revalidatePath("/dashboard/zones");
+}
+
+export async function unassignLockFromZone(zoneId: string, lockId: string) {
+  await requireAuth();
+  const admin = createAdminClient();
+  await admin.rpc("unassign_lock_from_zone", { p_zone_id: zoneId, p_lock_id: lockId });
+  revalidatePath("/dashboard/zones");
+}

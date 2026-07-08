@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Zone, Site } from "@/lib/types";
 import { ZoneForm } from "./zone-form";
 import { DeleteZoneButton } from "./delete-button";
+import { LockAssignment } from "./lock-assignment";
+import { assignLockToZone, unassignLockFromZone } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -94,11 +96,38 @@ export default async function ZonesPage(props: {
   const siteList = (sites ?? []) as Site[];
   const siteIds = siteList.map(s => s.id);
 
-  const { data: zones } = siteIds.length > 0
-    ? await admin.rpc("get_enterprise_zones", { p_site_ids: siteIds })
-    : { data: [] };
+  const propertyIds = siteList.map(s => s.property_id);
+
+  const [{ data: zones }, { data: zoneLockRows }, { data: locks }] = await Promise.all([
+    siteIds.length > 0
+      ? admin.rpc("get_enterprise_zones", { p_site_ids: siteIds })
+      : Promise.resolve({ data: [] }),
+    siteIds.length > 0
+      ? admin.rpc("get_zone_locks", { p_zone_ids: siteIds }) // will filter in code
+      : Promise.resolve({ data: [] }),
+    propertyIds.length > 0
+      ? admin.from("locks").select("id,name,unit_label").in("property_id", propertyIds)
+      : Promise.resolve({ data: [] }),
+  ]);
 
   const zoneList = (zones ?? []) as Zone[];
+  const allLocks = (locks ?? []) as { id: string; name: string; unit_label: string | null }[];
+
+  // Get zone locks properly - need zone IDs not site IDs
+  const allZoneIds = zoneList.map(z => z.id);
+  const { data: actualZoneLocks } = allZoneIds.length > 0
+    ? await admin.rpc("get_zone_locks", { p_zone_ids: allZoneIds })
+    : { data: [] };
+  const zoneLockList = (actualZoneLocks ?? []) as { id: string; zone_id: string; lock_id: string }[];
+
+  // Build a map of zone_id -> lock_ids[]
+  const zoneLockMap = new Map<string, string[]>();
+  for (const zl of zoneLockList) {
+    const existing = zoneLockMap.get(zl.zone_id);
+    if (existing) existing.push(zl.lock_id);
+    else zoneLockMap.set(zl.zone_id, [zl.lock_id]);
+  }
+  void zoneLockRows; // consumed via actualZoneLocks instead
 
   // Group zones by site, then by floor
   const siteMap = new Map<string, Site>();
@@ -234,33 +263,40 @@ export default async function ZonesPage(props: {
 
                         {/* Zones in this group */}
                         {group.zones.map((zone, zi) => (
-                          <div
-                            key={zone.id}
-                            style={{
+                          <div key={zone.id} style={{ borderTop: zi > 0 ? "1px solid #F0EEEA" : "none" }}>
+                            <div style={{
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "space-between",
                               padding: "12px 20px 12px 32px",
-                              borderTop: zi > 0 ? "1px solid #F0EEEA" : "none",
-                            }}
-                          >
-                            <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
-                              <span style={{ fontSize: 16, width: 24, textAlign: "center", flexShrink: 0 }}>
-                                {ZONE_ICONS[zone.zone_type] ?? "▪"}
-                              </span>
-                              <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: 14, fontWeight: 500, color: "#0A0A0B" }}>
-                                  {zone.name}
-                                </div>
-                                <div style={{ fontSize: 11, color: "#8A8A8E", display: "flex", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
-                                  <span>{ZONE_LABELS[zone.zone_type] ?? zone.zone_type}</span>
-                                  {zone.unit_number && <span style={{ color: "#3A3A3D" }}>#{zone.unit_number}</span>}
-                                  {zone.capacity !== null && <span>Cap: {zone.capacity}</span>}
+                            }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+                                <span style={{ fontSize: 16, width: 24, textAlign: "center", flexShrink: 0 }}>
+                                  {ZONE_ICONS[zone.zone_type] ?? "▪"}
+                                </span>
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ fontSize: 14, fontWeight: 500, color: "#0A0A0B" }}>
+                                    {zone.name}
+                                  </div>
+                                  <div style={{ fontSize: 11, color: "#8A8A8E", display: "flex", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
+                                    <span>{ZONE_LABELS[zone.zone_type] ?? zone.zone_type}</span>
+                                    {zone.unit_number && <span style={{ color: "#3A3A3D" }}>#{zone.unit_number}</span>}
+                                    {zone.capacity !== null && <span>Cap: {zone.capacity}</span>}
+                                  </div>
                                 </div>
                               </div>
+                              <DeleteZoneButton zoneId={zone.id} />
                             </div>
-
-                            <DeleteZoneButton zoneId={zone.id} />
+                            <div style={{ padding: "0 20px 10px 56px" }}>
+                              <LockAssignment
+                                zoneId={zone.id}
+                                zoneName={zone.name}
+                                assignedLockIds={zoneLockMap.get(zone.id) ?? []}
+                                allLocks={allLocks}
+                                assignAction={assignLockToZone}
+                                unassignAction={unassignLockFromZone}
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>
