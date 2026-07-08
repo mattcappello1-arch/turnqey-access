@@ -3,6 +3,27 @@
 import { useState, useTransition } from "react";
 import { updateGuestStayStatus, deleteGuestStay } from "./actions";
 
+export function CopyGuestLink({ stayId }: { stayId: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    const url = `${window.location.origin}/guest-portal/${stayId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      style={{ fontSize: 11, color: copied ? "#0A6E3B" : "#8A8A8E", background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}
+    >
+      {copied ? "Copied" : "Copy link"}
+    </button>
+  );
+}
+
 export function GuestStatusButton({ stayId, currentStatus }: { stayId: string; currentStatus: string }) {
   const [pending, startTransition] = useTransition();
 

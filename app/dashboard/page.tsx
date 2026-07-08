@@ -13,7 +13,7 @@ export default async function OverviewPage() {
   const propertyIds = (sites ?? []).map((s: { property_id: string }) => s.property_id);
   const siteIds = (sites ?? []).map((s: { id: string }) => s.id);
 
-  const [{ data: locks }, { data: stays }, { data: zones }] = await Promise.all([
+  const [{ data: locks }, { data: stays }, { data: zones }, { data: events }] = await Promise.all([
     propertyIds.length > 0
       ? admin.from("locks").select("id,name,unit_label,is_locked,is_online,battery_level,property_id").in("property_id", propertyIds)
       : Promise.resolve({ data: [] }),
@@ -23,11 +23,16 @@ export default async function OverviewPage() {
     siteIds.length > 0
       ? admin.rpc("get_enterprise_zones", { p_site_ids: siteIds })
       : Promise.resolve({ data: [] }),
+    propertyIds.length > 0
+      ? admin.from("access_events").select("id,event_type,actor,occurred_at,lock_id").in("property_id", propertyIds).order("occurred_at", { ascending: false }).limit(8)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const lockList = (locks ?? []) as Lock[];
   const stayList = (stays ?? []) as GuestStay[];
   const zoneList = (zones ?? []) as { id: string; name: string; zone_type: string; unit_number: string | null }[];
+  const eventList = (events ?? []) as { id: string; event_type: string; actor: string | null; occurred_at: string; lock_id: string | null }[];
+  const lockNameMap = new Map(lockList.map(l => [l.id, l.unit_label || l.name]));
 
   const totalLocks = lockList.length;
   const onlineLocks = lockList.filter(l => l.is_online !== false).length;
@@ -197,6 +202,39 @@ export default async function OverviewPage() {
                   {roomZone && <div style={{ fontSize: 11, color: "#8A8A8E" }}>Room {roomZone.unit_number || roomZone.name}</div>}
                   <div style={{ fontSize: 10, color: "#8A8A8E", marginTop: 4 }}>
                     Checkout: {new Date(stay.check_out).toLocaleDateString("en-AU", { day: "numeric", month: "short" })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {/* Recent activity */}
+      {eventList.length > 0 && (
+        <div style={{ marginTop: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 500, color: "#0A0A0B" }}>Recent activity</h2>
+            <Link href="/dashboard/reports" style={{ fontSize: 12, color: "#8A8A8E", textDecoration: "none" }}>View all</Link>
+          </div>
+          <div style={{ background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, overflow: "hidden" }}>
+            {eventList.map(ev => {
+              const lockName = ev.lock_id ? (lockNameMap.get(ev.lock_id) as string | undefined) || "" : "";
+              const time = new Date(ev.occurred_at);
+              const isUnlock = ev.event_type === "unlock";
+              return (
+                <div key={ev.id} className="list-row" style={{ padding: "10px 16px", borderBottom: "1px solid #E8E6E1", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: isUnlock ? "#0A6E3B" : "#8A3324", flexShrink: 0 }} />
+                    <div>
+                      <span style={{ fontSize: 13, color: "#0A0A0B" }}>{ev.event_type}</span>
+                      {lockName && <span style={{ fontSize: 12, color: "#8A8A8E" }}> on {lockName}</span>}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 11, color: "#8A8A8E" }}>
+                    {ev.actor && <span>{ev.actor}</span>}
+                    <span style={{ fontFamily: "'Courier New', monospace", fontSize: 10 }}>
+                      {time.toLocaleTimeString("en-AU", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
                   </div>
                 </div>
               );

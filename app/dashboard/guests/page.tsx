@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { GuestStay } from "@/lib/types";
-import { GuestStatusButton, DeleteStayButton } from "./GuestActions";
+import { GuestStatusButton, DeleteStayButton, CopyGuestLink } from "./GuestActions";
 import { AddGuestForm } from "./AddGuestForm";
 
 export const dynamic = "force-dynamic";
@@ -62,14 +62,17 @@ export default async function GuestsPage() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
           {(stay.status === "checked_in" || stay.status === "upcoming") && (
-            <a
-              href={`/guest-portal/${stay.id}`}
-              target="_blank"
-              rel="noopener"
-              style={{ fontSize: 11, color: "#0A6E3B", textDecoration: "none", fontWeight: 500, padding: "4px 10px", background: "rgba(10,110,59,0.06)", borderRadius: 6 }}
-            >
-              Guest link
-            </a>
+            <>
+              <a
+                href={`/guest-portal/${stay.id}`}
+                target="_blank"
+                rel="noopener"
+                style={{ fontSize: 11, color: "#0A6E3B", textDecoration: "none", fontWeight: 500, padding: "4px 10px", background: "rgba(10,110,59,0.06)", borderRadius: 6 }}
+              >
+                Guest link
+              </a>
+              <CopyGuestLink stayId={stay.id} />
+            </>
           )}
           <GuestStatusButton stayId={stay.id} currentStatus={stay.status} />
           <DeleteStayButton stayId={stay.id} />

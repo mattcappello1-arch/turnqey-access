@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Lock } from "@/lib/types";
 import { LockControl } from "./LockControl";
+import { LockFilters } from "./LockFilters";
 
 export const dynamic = "force-dynamic";
 
@@ -45,52 +46,59 @@ export default async function LocksPage() {
         ))}
       </div>
 
-      {/* Lock grid */}
+      {/* Lock grid with filters */}
       {lockList.length === 0 ? (
         <div style={{ padding: 48, background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, textAlign: "center", color: "#8A8A8E", fontSize: 14 }}>
           No locks connected yet. Add locks via the Turnqey dashboard, then assign them to zones here.
         </div>
       ) : (
-        <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
-          {lockList.map(lock => {
-            const batPct = lock.battery_level !== null ? Math.round(lock.battery_level * 100) : null;
-            const isOffline = lock.is_online === false;
-            const isLow = batPct !== null && batPct < 20;
-            const siteName = (siteMap.get(lock.property_id) as string | undefined) || "";
+        <LockFilters locks={lockList} siteMap={Object.fromEntries(siteMap)}>
+          {(filtered) => (
+            <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
+              {filtered.map(lock => {
+                const batPct = lock.battery_level !== null ? Math.round(lock.battery_level * 100) : null;
+                const isOffline = lock.is_online === false;
+                const isLow = batPct !== null && batPct < 20;
+                const siteName = (siteMap.get(lock.property_id) as string | undefined) || "";
 
-            return (
-              <div key={lock.id} className="card-hover" style={{
-                padding: "16px 14px", background: "#FFFFFF", border: `1px solid ${isOffline ? "#8A332430" : "#E8E6E1"}`,
-                borderRadius: 14, display: "flex", flexDirection: "column", gap: 8,
-                opacity: isOffline ? 0.6 : 1,
-              }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#0A0A0B", lineHeight: 1.2 }}>{lock.unit_label || lock.name}</div>
-                {lock.unit_label && <div style={{ fontSize: 11, color: "#8A8A8E" }}>{lock.name}</div>}
-                <div style={{ fontSize: 10, color: "#8A8A8E" }}>{siteName}</div>
+                return (
+                  <div key={lock.id} className="card-hover" style={{
+                    padding: "16px 14px", background: "#FFFFFF", border: `1px solid ${isOffline ? "#8A332430" : "#E8E6E1"}`,
+                    borderRadius: 14, display: "flex", flexDirection: "column", gap: 8,
+                    opacity: isOffline ? 0.6 : 1,
+                  }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0A0A0B", lineHeight: 1.2 }}>{lock.unit_label || lock.name}</div>
+                    {lock.unit_label && <div style={{ fontSize: 11, color: "#8A8A8E" }}>{lock.name}</div>}
+                    <div style={{ fontSize: 10, color: "#8A8A8E" }}>{siteName}</div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: "auto" }}>
-                  <span style={{
-                    width: 7, height: 7, borderRadius: "50%",
-                    background: isOffline ? "#8A8A8E" : lock.is_locked ? "#8A3324" : "#0A6E3B",
-                  }} />
-                  <span style={{ fontSize: 11, fontWeight: 500, color: isOffline ? "#8A8A8E" : lock.is_locked ? "#8A3324" : "#0A6E3B" }}>
-                    {isOffline ? "Offline" : lock.is_locked ? "Locked" : "Unlocked"}
-                  </span>
-                </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: "auto" }}>
+                      <span style={{
+                        width: 7, height: 7, borderRadius: "50%",
+                        background: isOffline ? "#8A8A8E" : lock.is_locked ? "#8A3324" : "#0A6E3B",
+                      }} />
+                      <span style={{ fontSize: 11, fontWeight: 500, color: isOffline ? "#8A8A8E" : lock.is_locked ? "#8A3324" : "#0A6E3B" }}>
+                        {isOffline ? "Offline" : lock.is_locked ? "Locked" : "Unlocked"}
+                      </span>
+                    </div>
 
-                {batPct !== null && (
-                  <div style={{ fontSize: 11, color: isLow ? "#8A3324" : "#8A8A8E", fontWeight: isLow ? 600 : 400 }}>
-                    {batPct}% battery
+                    {batPct !== null && (
+                      <div style={{ fontSize: 11, color: isLow ? "#8A3324" : "#8A8A8E", fontWeight: isLow ? 600 : 400 }}>
+                        {batPct}% battery
+                      </div>
+                    )}
+
+                    <div style={{ marginTop: 4 }}>
+                      <LockControl lockId={lock.id} isLocked={lock.is_locked} isOnline={lock.is_online} />
+                    </div>
                   </div>
-                )}
-
-                <div style={{ marginTop: 4 }}>
-                  <LockControl lockId={lock.id} isLocked={lock.is_locked} isOnline={lock.is_online} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+              {filtered.length === 0 && (
+                <div style={{ gridColumn: "1 / -1", padding: 32, textAlign: "center", color: "#8A8A8E", fontSize: 13 }}>No locks match your filters.</div>
+              )}
+            </div>
+          )}
+        </LockFilters>
       )}
     </div>
   );

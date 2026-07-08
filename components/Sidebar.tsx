@@ -103,12 +103,25 @@ export function Sidebar({ orgName, role, userEmail }: { orgName: string; role: E
             })}
           </nav>
 
-          {/* Bottom: user info */}
+          {/* Bottom: user info + logout */}
           <div className="mt-auto pt-3 border-t" style={{ borderColor: "#E8E6E1" }}>
             <div style={{ padding: "8px 12px" }}>
               <div style={{ fontSize: 12, color: "#0A0A0B", fontWeight: 500, lineHeight: 1.3, marginBottom: 2 }}>{userEmail}</div>
-              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#0A6E3B" }}>
-                {ROLE_LABELS[role] || role}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#0A6E3B" }}>
+                  {ROLE_LABELS[role] || role}
+                </span>
+                <button
+                  onClick={async () => {
+                    const { createClient } = await import("@/lib/supabase/client");
+                    const supabase = createClient();
+                    await supabase.auth.signOut();
+                    window.location.href = "/login";
+                  }}
+                  style={{ fontSize: 11, color: "#8A8A8E", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}
+                >
+                  Sign out
+                </button>
               </div>
             </div>
           </div>
