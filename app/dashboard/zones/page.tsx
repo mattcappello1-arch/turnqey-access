@@ -113,9 +113,20 @@ export default async function ZonesPage(props: {
 
   const zoneList = (zones ?? []) as Zone[];
   const allLocks = (locks ?? []) as { id: string; name: string; unit_label: string | null }[];
+  const allZoneIds = zoneList.map(z => z.id);
+
+  // Get zone access rules
+  const { data: accessRules } = allZoneIds.length > 0
+    ? await admin.rpc("get_zone_access_rules", { p_zone_ids: allZoneIds })
+    : { data: [] };
+  const rulesByZone = new Map<string, { name: string; start_time: string; end_time: string }[]>();
+  for (const rule of (accessRules ?? []) as { zone_id: string; name: string; start_time: string; end_time: string }[]) {
+    const existing = rulesByZone.get(rule.zone_id);
+    if (existing) existing.push(rule);
+    else rulesByZone.set(rule.zone_id, [rule]);
+  }
 
   // Get zone locks properly - need zone IDs not site IDs
-  const allZoneIds = zoneList.map(z => z.id);
   const { data: actualZoneLocks } = allZoneIds.length > 0
     ? await admin.rpc("get_zone_locks", { p_zone_ids: allZoneIds })
     : { data: [] };
@@ -287,6 +298,15 @@ export default async function ZonesPage(props: {
                                     <span>{ZONE_LABELS[zone.zone_type] ?? zone.zone_type}</span>
                                     {zone.unit_number && <span style={{ color: "#3A3A3D" }}>#{zone.unit_number}</span>}
                                     {zone.capacity !== null && <span>Cap: {zone.capacity}</span>}
+                                    {(() => {
+                                      const rules = rulesByZone.get(zone.id);
+                                      if (!rules || rules.length === 0) return null;
+                                      return rules.map(r => (
+                                        <span key={r.name} style={{ color: "#0A6E3B", fontWeight: 500 }}>
+                                          {r.start_time.slice(0,5)}-{r.end_time.slice(0,5)}
+                                        </span>
+                                      ));
+                                    })()}
                                   </div>
                                 </div>
                               </div>

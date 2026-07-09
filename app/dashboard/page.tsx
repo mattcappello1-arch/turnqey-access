@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { GuestStay, Lock } from "@/lib/types";
 import Link from "next/link";
 import { AutoRefresh } from "@/components/AutoRefresh";
+import { QuickCheckIn } from "./QuickCheckIn";
 
 export const dynamic = "force-dynamic";
 
@@ -133,13 +134,16 @@ export default async function OverviewPage() {
               </div>
             ) : (
               todayCheckins.map(stay => (
-                <div key={stay.id} style={{ padding: "12px 16px", borderBottom: "1px solid #E8E6E1", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div key={stay.id} className="list-row" style={{ padding: "12px 16px", borderBottom: "1px solid #E8E6E1", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: "#0A0A0B" }}>{stay.guest_name}</div>
                     <div style={{ fontSize: 11, color: "#8A8A8E" }}>{stay.guest_email || ""}</div>
                   </div>
-                  <div style={{ fontSize: 11, color: "#8A8A8E", fontFamily: "'Courier New', monospace" }}>
-                    {new Date(stay.check_in).toLocaleTimeString("en-AU", { hour: "2-digit", minute: "2-digit" })}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 10, color: "#8A8A8E", fontFamily: "'Courier New', monospace" }}>
+                      {new Date(stay.check_in).toLocaleTimeString("en-AU", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                    <QuickCheckIn stayId={stay.id} guestName={stay.guest_name} />
                   </div>
                 </div>
               ))
@@ -187,6 +191,55 @@ export default async function OverviewPage() {
           </div>
         </div>
       </div>
+
+      {/* Zone occupancy */}
+      {zoneList.length > 0 && currentGuests.length > 0 && (() => {
+        const commonZones = zoneList.filter(z => ["common_area", "entrance", "parking"].includes(z.zone_type));
+        const roomZones = zoneList.filter(z => z.zone_type === "room");
+        const occupiedRoomIds = new Set(currentGuests.map(g => g.room_zone_id).filter(Boolean));
+        const occupiedRooms = occupiedRoomIds.size;
+        const totalRoomsCount = roomZones.length;
+        const occupancyPct = totalRoomsCount > 0 ? Math.round((occupiedRooms / totalRoomsCount) * 100) : 0;
+
+        return (
+          <div style={{ marginTop: 24 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <h2 style={{ fontSize: 15, fontWeight: 500, color: "#0A0A0B" }}>Zone occupancy</h2>
+              <Link href="/dashboard/zones" style={{ fontSize: 12, color: "#8A8A8E", textDecoration: "none" }}>View zones</Link>
+            </div>
+
+            {/* Occupancy bar */}
+            <div style={{ background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, padding: 18, marginBottom: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ fontSize: 13, color: "#0A0A0B", fontWeight: 500 }}>Room occupancy</span>
+                <span style={{ fontSize: 22, fontWeight: 300, color: "#0A0A0B" }}>{occupancyPct}%</span>
+              </div>
+              <div style={{ height: 6, background: "#E8E6E1", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${occupancyPct}%`, background: occupancyPct > 80 ? "#0A6E3B" : "#3A3A3D", borderRadius: 3, transition: "width 0.5s ease" }} />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, fontSize: 11, color: "#8A8A8E" }}>
+                <span>{occupiedRooms} of {totalRoomsCount} rooms occupied</span>
+                <span>{totalRoomsCount - occupiedRooms} available</span>
+              </div>
+            </div>
+
+            {/* Common areas */}
+            {commonZones.length > 0 && (
+              <div className="grid-stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8 }}>
+                {commonZones.map(zone => {
+                  const guestsWithAccess = currentGuests.filter(g => (g.common_zone_ids || []).includes(zone.id)).length;
+                  return (
+                    <div key={zone.id} className="card-hover" style={{ padding: "12px 14px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 10 }}>
+                      <div style={{ fontSize: 12, fontWeight: 500, color: "#0A0A0B", marginBottom: 2 }}>{zone.name}</div>
+                      <div style={{ fontSize: 11, color: "#8A8A8E" }}>{guestsWithAccess} guest{guestsWithAccess !== 1 ? "s" : ""} with access</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Current guests */}
       {currentGuests.length > 0 && (
