@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { GuestStay, Lock } from "@/lib/types";
 import Link from "next/link";
+import { AutoRefresh } from "@/components/AutoRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,7 @@ export default async function OverviewPage() {
 
   return (
     <div>
+      <AutoRefresh interval={30000} />
       {/* Header */}
       <div style={{ marginBottom: isEmpty ? 16 : 32 }}>
         <h1 style={{ fontSize: 28, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>{greeting}</h1>

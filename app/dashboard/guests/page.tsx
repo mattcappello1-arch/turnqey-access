@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { GuestStay } from "@/lib/types";
 import { GuestStatusButton, DeleteStayButton, CopyGuestLink } from "./GuestActions";
 import { AddGuestForm } from "./AddGuestForm";
+import { ExportGuestsButton } from "./ExportGuests";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,15 @@ export default async function GuestsPage() {
                 rel="noopener"
                 style={{ fontSize: 11, color: "#0A6E3B", textDecoration: "none", fontWeight: 500, padding: "4px 10px", background: "rgba(10,110,59,0.06)", borderRadius: 6 }}
               >
-                Guest link
+                Portal
+              </a>
+              <a
+                href={`/guest-portal/${stay.id}/card`}
+                target="_blank"
+                rel="noopener"
+                style={{ fontSize: 11, color: "#3A3A3D", textDecoration: "none", fontWeight: 500, padding: "4px 10px", background: "#F7F5F0", borderRadius: 6, border: "1px solid #E8E6E1" }}
+              >
+                Card
               </a>
               <CopyGuestLink stayId={stay.id} />
             </>
@@ -83,9 +92,21 @@ export default async function GuestsPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Guests</h1>
-        <p style={{ fontSize: 14, color: "#8A8A8E" }}>{activeStays.length} in-house · {upcomingStays.length} upcoming</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Guests</h1>
+          <p style={{ fontSize: 14, color: "#8A8A8E" }}>{activeStays.length} in-house · {upcomingStays.length} upcoming</p>
+        </div>
+        <ExportGuestsButton guests={stayList.map(s => ({
+          guest_name: s.guest_name,
+          guest_email: s.guest_email,
+          guest_phone: s.guest_phone,
+          status: s.status,
+          check_in: s.check_in,
+          check_out: s.check_out,
+          room: s.room_zone_id ? (zoneMap.get(s.room_zone_id) as string | undefined) || null : null,
+          notes: s.notes,
+        }))} />
       </div>
 
       <AddGuestForm
