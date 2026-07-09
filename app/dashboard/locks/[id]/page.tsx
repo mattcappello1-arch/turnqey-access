@@ -102,6 +102,7 @@ export default async function LockDetailPage({ params }: { params: Promise<{ id:
               { label: "Manufacturer", val: lock.manufacturer || "Unknown" },
               { label: "Model", val: lock.model || "Unknown" },
               { label: "Zones", val: assignedZones.length > 0 ? (assignedZones as string[]).join(", ") : "Not assigned" },
+              { label: "NFC", val: lock.supports_nfc ? "Yes" : "No" },
               { label: "Supports PIN", val: lock.supports_pin_codes ? "Yes" : "No" },
               { label: "Supports remote", val: lock.supports_remote ? "Yes" : "No" },
               { label: "Has keypad", val: lock.has_keypad ? "Yes" : "No" },

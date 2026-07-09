@@ -15,15 +15,16 @@ export default async function LocksPage() {
   const propertyIds = (sites ?? []).map((s: { property_id: string }) => s.property_id);
 
   const { data: locks } = propertyIds.length > 0
-    ? await admin.from("locks").select("id,name,unit_label,is_locked,is_online,battery_level,manufacturer,model,last_synced_at,property_id").in("property_id", propertyIds).order("name")
+    ? await admin.from("locks").select("id,name,unit_label,is_locked,is_online,battery_level,manufacturer,model,last_synced_at,property_id,supports_nfc").in("property_id", propertyIds).order("name")
     : { data: [] };
 
-  const lockList = (locks ?? []) as (Lock & { manufacturer: string | null; model: string | null; last_synced_at: string | null })[];
+  const lockList = (locks ?? []) as (Lock & { manufacturer: string | null; model: string | null; last_synced_at: string | null; supports_nfc?: boolean })[];
   const siteMap = new Map((sites ?? []).map((s: { property_id: string; name: string }) => [s.property_id, s.name]));
 
   const online = lockList.filter(l => l.is_online !== false).length;
   const locked = lockList.filter(l => l.is_locked === true).length;
   const lowBat = lockList.filter(l => l.battery_level !== null && l.battery_level < 0.2).length;
+  const nfcCount = lockList.filter(l => l.supports_nfc).length;
 
   return (
     <div>
@@ -44,6 +45,7 @@ export default async function LocksPage() {
           { val: locked, label: "Locked" },
           { val: lockList.length - locked, label: "Unlocked" },
           { val: lowBat, label: "Low battery", warn: lowBat > 0 },
+          { val: nfcCount, label: "NFC enabled" },
         ].map(s => (
           <div key={s.label} style={{ padding: "14px 20px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 12, textAlign: "center", minWidth: 100 }}>
             <div style={{ fontSize: 20, fontWeight: 300, color: s.warn ? "#8A3324" : "#0A0A0B" }}>{s.val}</div>
@@ -75,7 +77,10 @@ export default async function LocksPage() {
                   }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#0A0A0B", lineHeight: 1.2 }}>{lock.unit_label || lock.name}</div>
                     {lock.unit_label && <div style={{ fontSize: 11, color: "#8A8A8E" }}>{lock.name}</div>}
-                    <div style={{ fontSize: 10, color: "#8A8A8E" }}>{siteName}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 10, color: "#8A8A8E" }}>{siteName}</span>
+                      {lock.supports_nfc && <span style={{ fontSize: 9, padding: "1px 5px", background: "rgba(10,110,59,0.08)", color: "#0A6E3B", borderRadius: 4, fontWeight: 600 }}>NFC</span>}
+                    </div>
 
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: "auto" }}>
                       <span style={{

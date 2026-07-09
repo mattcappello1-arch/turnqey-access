@@ -81,22 +81,44 @@ export default async function GuestPortalPage({ params }: { params: Promise<{ to
             </div>
           </div>
 
-          {/* Unlock button (visual only for now) */}
+          {/* Access methods */}
           {isActive && (
-            <div style={{ textAlign: "center", padding: "24px 0" }}>
-              <div style={{
-                width: 100, height: 100, borderRadius: "50%",
-                background: `${brandColor}12`, border: `2px solid ${brandColor}30`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                margin: "0 auto 12px", cursor: "pointer",
-                transition: "all 0.2s",
-              }}>
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={brandColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" />
-                  <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-                </svg>
+            <div style={{ padding: "20px 0" }}>
+              {/* NFC tap */}
+              <div style={{ textAlign: "center", marginBottom: 20 }}>
+                <div style={{
+                  width: 100, height: 100, borderRadius: "50%",
+                  background: `${brandColor}12`, border: `2px solid ${brandColor}30`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  margin: "0 auto 10px", cursor: "pointer",
+                  transition: "all 0.2s",
+                }}>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={brandColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                  </svg>
+                </div>
+                <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 2, color: brandColor, textTransform: "uppercase" }}>Tap to unlock</div>
+                <div style={{ fontSize: 11, color: "#8A8A8E", marginTop: 4 }}>Hold your phone near the lock</div>
               </div>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 2, color: brandColor, textTransform: "uppercase" }}>Tap to unlock</div>
+
+              {/* NFC badge */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 0", borderTop: "1px solid #E8E6E1", borderBottom: "1px solid #E8E6E1", marginBottom: 16 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={brandColor} strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M2 7v-1a2 2 0 012-2h16a2 2 0 012 2v1" />
+                  <path d="M2 17v1a2 2 0 002 2h16a2 2 0 002-2v-1" />
+                  <path d="M7 12h0" /><path d="M12 12h0" /><path d="M17 12h0" />
+                  <path d="M6 8c4 0 6 2 6 4s-2 4-6 4" />
+                </svg>
+                <span style={{ fontSize: 12, fontWeight: 500, color: brandColor }}>NFC enabled</span>
+                <span style={{ fontSize: 10, color: "#8A8A8E" }}>iPhone and Android</span>
+              </div>
+
+              {/* Alternative: PIN */}
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#8A8A8E", marginBottom: 6 }}>Or use your code on the keypad</div>
+                <div style={{ fontSize: 11, color: "#8A8A8E" }}>Your access code was sent to your email</div>
+              </div>
             </div>
           )}
 

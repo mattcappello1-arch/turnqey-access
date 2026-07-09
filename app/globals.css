@@ -203,3 +203,109 @@ input:focus, select:focus, textarea:focus {
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  main {
+    padding: 16px !important;
+  }
+
+  /* Stack two-column grids */
+  .grid-cols-1.md\:grid-cols-2,
+  [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce stat card font sizes */
+  .stat-card div:first-child {
+    font-size: 22px !important;
+  }
+
+  /* Stack action buttons */
+  [style*="display: flex"][style*="justify-content: space-between"] {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Full-width buttons on mobile */
+  .btn-animate,
+  [style*="padding: 10px 20px"][style*="background: #0A0A0B"] {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Single column lock grid */
+  .grid-stagger {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Smaller page titles */
+  h1 {
+    font-size: 22px !important;
+  }
+}
+
+/* ── Command palette ── */
+@keyframes cmdFadeIn {
+  from { opacity: 0; transform: scale(0.98) translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.cmd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(10, 10, 11, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+.cmd-panel {
+  width: 100%;
+  max-width: 500px;
+  background: #FFFFFF;
+  border: 1px solid #E8E6E1;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  animation: cmdFadeIn 0.15s ease;
+}
+
+.cmd-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #0A0A0B;
+  background: transparent;
+  border-bottom: 1px solid #E8E6E1;
+}
+
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.1s;
+  font-size: 14px;
+  color: #3A3A3D;
+}
+
+.cmd-item:hover, .cmd-item.active {
+  background: #F7F5F0;
+}
+
+.cmd-item .cmd-shortcut {
+  margin-left: auto;
+  font-size: 11px;
+  color: #8A8A8E;
+  font-family: 'Courier New', monospace;
+}

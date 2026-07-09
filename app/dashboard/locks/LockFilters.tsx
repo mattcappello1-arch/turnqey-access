@@ -13,6 +13,7 @@ type Lock = {
   manufacturer: string | null;
   model: string | null;
   last_synced_at: string | null;
+  supports_nfc?: boolean;
 };
 
 export function LockFilters({ locks, siteMap, children }: {

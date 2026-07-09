@@ -35,7 +35,15 @@ export default function LoginPage() {
         <div>
           <div style={{ fontSize: 12, fontWeight: 400, letterSpacing: "0.18em", color: "#F7F5F0", textTransform: "uppercase", marginBottom: 48 }}>Turnqey Access</div>
           <h1 style={{ fontSize: 32, fontWeight: 300, color: "#F7F5F0", letterSpacing: -1, lineHeight: 1.2, marginBottom: 16 }}>Enterprise access management</h1>
-          <p style={{ fontSize: 14, color: "#8A8A8E", lineHeight: 1.6 }}>Manage locks, guests, zones, and teams across all your properties from one dashboard.</p>
+          <p style={{ fontSize: 14, color: "#8A8A8E", lineHeight: 1.6, marginBottom: 24 }}>Manage locks, guests, zones, and teams across all your properties from one dashboard.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {["NFC tap-to-unlock for guests", "PIN codes that expire at check-out", "Multi-zone access (room + pool + gym)", "Real-time lock monitoring"].map(f => (
+              <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#8A8A8E" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A6E3B" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+                {f}
+              </div>
+            ))}
+          </div>
         </div>
         <div style={{ fontSize: 12, color: "#3A3A3D" }}>Powered by Turnqey</div>
       </div>

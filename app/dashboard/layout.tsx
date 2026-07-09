@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Sidebar } from "@/components/Sidebar";
+import { CommandPalette } from "@/components/CommandPalette";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { org, member, email } = await requireAuth();
@@ -15,6 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <main className="flex-1 min-w-0 p-6 md:p-8 max-w-[1200px]">
         {children}
       </main>
+      <CommandPalette />
     </div>
   );
 }

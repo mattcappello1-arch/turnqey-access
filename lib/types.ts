@@ -118,6 +118,17 @@ export type Lock = {
   is_locked: boolean | null;
   is_online: boolean | null;
   last_synced_at: string | null;
+  supports_nfc?: boolean;
+  supports_pin_codes?: boolean | null;
+  supports_remote?: boolean;
+  supports_fingerprint?: boolean;
+  has_keypad?: boolean;
+  has_gateway?: boolean | null;
+  has_auto_lock?: boolean;
+  has_door_sensor?: boolean;
+  has_wifi?: boolean;
+  has_bluetooth_5?: boolean;
+  supports_wallet_key?: boolean;
 };
 
 export type EnterpriseMemberRole = OrgMember["role"];
