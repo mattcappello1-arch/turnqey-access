@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Lock } from "@/lib/types";
 import { LockControl } from "./LockControl";
 import { LockFilters } from "./LockFilters";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,14 @@ export default async function LocksPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Locks</h1>
-        <p style={{ fontSize: 14, color: "#8A8A8E" }}>{lockList.length} locks across {(sites ?? []).length} sites</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Locks</h1>
+          <p style={{ fontSize: 14, color: "#8A8A8E" }}>{lockList.length} locks across {(sites ?? []).length} sites</p>
+        </div>
+        <a href="https://turnqey.com.au/dashboard/locks" target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", background: "#0A0A0B", color: "#F7F5F0", borderRadius: 10, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>
+          + Connect lock
+        </a>
       </div>
 
       {/* Stats */}
@@ -62,10 +68,10 @@ export default async function LocksPage() {
                 const siteName = (siteMap.get(lock.property_id) as string | undefined) || "";
 
                 return (
-                  <div key={lock.id} className="card-hover" style={{
+                  <Link key={lock.id} href={`/dashboard/locks/${lock.id}`} className="card-hover" style={{
                     padding: "16px 14px", background: "#FFFFFF", border: `1px solid ${isOffline ? "#8A332430" : "#E8E6E1"}`,
                     borderRadius: 14, display: "flex", flexDirection: "column", gap: 8,
-                    opacity: isOffline ? 0.6 : 1,
+                    opacity: isOffline ? 0.6 : 1, textDecoration: "none", color: "inherit",
                   }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#0A0A0B", lineHeight: 1.2 }}>{lock.unit_label || lock.name}</div>
                     {lock.unit_label && <div style={{ fontSize: 11, color: "#8A8A8E" }}>{lock.name}</div>}
@@ -87,10 +93,10 @@ export default async function LocksPage() {
                       </div>
                     )}
 
-                    <div style={{ marginTop: 4 }}>
+                    <div style={{ marginTop: 4 }} onClick={(e: React.MouseEvent) => e.preventDefault()}>
                       <LockControl lockId={lock.id} isLocked={lock.is_locked} isOnline={lock.is_online} />
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
               {filtered.length === 0 && (

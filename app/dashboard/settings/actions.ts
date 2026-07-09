@@ -32,3 +32,33 @@ export async function updateOrganization(data: {
   revalidatePath("/dashboard");
   return { error: null };
 }
+
+export async function addSite(data: {
+  org_id: string;
+  property_id: string;
+  name: string;
+  site_type: string;
+  address: string | null;
+}) {
+  const { member } = await requireAuth();
+  if (member.role !== "admin") throw new Error("Not authorised");
+  const admin = createAdminClient();
+  await admin.rpc("create_enterprise_site", {
+    p_org_id: data.org_id,
+    p_property_id: data.property_id,
+    p_name: data.name,
+    p_site_type: data.site_type,
+    p_address: data.address,
+  });
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard");
+}
+
+export async function removeSite(siteId: string) {
+  const { member } = await requireAuth();
+  if (member.role !== "admin") throw new Error("Not authorised");
+  const admin = createAdminClient();
+  await admin.rpc("delete_enterprise_site", { p_site_id: siteId });
+  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard");
+}
