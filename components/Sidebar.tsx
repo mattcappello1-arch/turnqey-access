@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { EnterpriseMemberRole } from "@/lib/types";
 import { hasPermission, type Permission } from "@/lib/permissions";
+import { NotificationBell } from "./NotificationBell";
 
 type NavItem = { href: string; label: string; desc: string; icon: React.ReactNode; permission?: Permission };
 
@@ -46,7 +47,7 @@ const ROLE_LABELS: Record<string, string> = {
   security: "Security",
 };
 
-export function Sidebar({ orgName, role, userEmail }: { orgName: string; role: EnterpriseMemberRole; userEmail: string }) {
+export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: string; role: EnterpriseMemberRole; userEmail: string; propertyIds: string[] }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -71,9 +72,12 @@ export function Sidebar({ orgName, role, userEmail }: { orgName: string; role: E
       >
         <div className="h-full flex flex-col p-3 gap-0.5 overflow-y-auto">
           {/* Logo + org */}
-          <div className="hidden md:block px-3 pt-4 pb-5 mb-1">
-            <div style={{ fontSize: 11, fontWeight: 400, letterSpacing: "0.18em", color: "#0A0A0B", textTransform: "uppercase", marginBottom: 6 }}>Turnqey Access</div>
-            <div style={{ fontSize: 13, fontWeight: 500, color: "#0A0A0B", lineHeight: 1.3 }}>{orgName}</div>
+          <div className="hidden md:flex items-center justify-between px-3 pt-4 pb-5 mb-1">
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 400, letterSpacing: "0.18em", color: "#0A0A0B", textTransform: "uppercase", marginBottom: 6 }}>Turnqey Access</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: "#0A0A0B", lineHeight: 1.3 }}>{orgName}</div>
+            </div>
+            <NotificationBell propertyIds={propertyIds} />
           </div>
 
           {/* Divider */}

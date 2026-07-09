@@ -5,6 +5,7 @@ import { ZoneForm } from "./zone-form";
 import { DeleteZoneButton } from "./delete-button";
 import { LockAssignment } from "./lock-assignment";
 import { assignLockToZone, unassignLockFromZone } from "./actions";
+import { BulkLockControl } from "./BulkLockControl";
 
 export const dynamic = "force-dynamic";
 
@@ -237,6 +238,10 @@ export default async function ZonesPage(props: {
                       {siteZones.length} zone{siteZones.length !== 1 ? "s" : ""}
                     </div>
                   </div>
+                  {(() => {
+                    const siteLockIds = [...new Set(siteZones.flatMap(z => zoneLockMap.get(z.id) ?? []))];
+                    return siteLockIds.length > 0 ? <BulkLockControl zoneId={site.id} zoneName={site.name} lockIds={siteLockIds} /> : null;
+                  })()}
                 </div>
 
                 {siteZones.length === 0 ? (
