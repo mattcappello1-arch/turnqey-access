@@ -83,6 +83,17 @@ export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: st
           {/* Divider */}
           <div className="hidden md:block" style={{ height: 1, background: "#E8E6E1", margin: "0 12px 8px" }} />
 
+          {/* Search shortcut */}
+          <button
+            onClick={() => { const ev = new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }); window.dispatchEvent(ev); }}
+            className="hidden md:flex nav-item items-center gap-3 px-3 py-2 rounded-xl text-sm mb-1"
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#8A8A8E", width: "100%", textAlign: "left" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+            <span style={{ flex: 1 }}>Search</span>
+            <kbd style={{ fontSize: 10, padding: "1px 5px", background: "#F7F5F0", border: "1px solid #E8E6E1", borderRadius: 4, color: "#8A8A8E" }}>⌘K</kbd>
+          </button>
+
           {/* Nav items */}
           <nav className="flex flex-col gap-1">
             {visibleItems.map(item => {

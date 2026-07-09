@@ -4,6 +4,7 @@ import type { GuestStay } from "@/lib/types";
 import { GuestStatusButton, DeleteStayButton, CopyGuestLink } from "./GuestActions";
 import { AddGuestForm } from "./AddGuestForm";
 import { ExportGuestsButton } from "./ExportGuests";
+import { GuestSearch } from "./GuestSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,9 @@ const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   no_show: { bg: "rgba(138,50,36,0.1)", text: "#8A3324" },
 };
 
-export default async function GuestsPage() {
+export default async function GuestsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const params = await searchParams;
+  const searchQuery = (params.q || "").toLowerCase();
   const { org } = await requireAuth();
   const admin = createAdminClient();
 
@@ -31,7 +34,22 @@ export default async function GuestsPage() {
       : Promise.resolve({ data: [] }),
   ]);
 
-  const stayList = (stays ?? []) as GuestStay[];
+  let stayList = (stays ?? []) as GuestStay[];
+
+  // Search filter
+  if (searchQuery) {
+    stayList = stayList.filter(s => {
+      const haystack = [s.guest_name, s.guest_email, s.notes].filter(Boolean).join(" ").toLowerCase();
+      return haystack.includes(searchQuery);
+    });
+  }
+
+  // Fetch PINs for checked-in guests
+  const allCodeIds = stayList.flatMap(s => s.access_code_ids || []).filter(Boolean);
+  const { data: codes } = allCodeIds.length > 0
+    ? await admin.from("access_codes").select("id,code").in("id", allCodeIds)
+    : { data: [] };
+  const codeMap = new Map((codes ?? []).map((c: { id: string; code: string }) => [c.id, c.code]));
   const allZones = (zones ?? []) as { id: string; name: string; unit_number: string | null; site_id: string; zone_type: string }[];
   const roomZones = allZones.filter(z => z.zone_type === "room");
   const zoneMap = new Map(roomZones.map(z => [z.id, z.unit_number || z.name]));
@@ -59,6 +77,15 @@ export default async function GuestsPage() {
             {room && <span>Room {room} · </span>}
             {site} · {checkIn.toLocaleDateString("en-AU", { day: "numeric", month: "short" })} to {checkOut.toLocaleDateString("en-AU", { day: "numeric", month: "short" })}
           </div>
+          {stay.status === "checked_in" && stay.access_code_ids?.length > 0 && (() => {
+            const pin = codeMap.get(stay.access_code_ids[0]) as string | undefined;
+            return pin ? (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "3px 10px", background: "rgba(10,110,59,0.06)", borderRadius: 6 }}>
+                <span style={{ fontSize: 10, color: "#0A6E3B", fontWeight: 600 }}>PIN</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: "#0A0A0B", fontFamily: "'Courier New', monospace", letterSpacing: 2 }}>{pin}</span>
+              </div>
+            ) : null;
+          })()}
           {stay.notes && <div style={{ fontSize: 11, color: "#8A8A8E", marginTop: 4 }}>{stay.notes}</div>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -97,7 +124,9 @@ export default async function GuestsPage() {
           <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Guests</h1>
           <p style={{ fontSize: 14, color: "#8A8A8E" }}>{activeStays.length} in-house · {upcomingStays.length} upcoming</p>
         </div>
-        <ExportGuestsButton guests={stayList.map(s => ({
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <GuestSearch />
+          <ExportGuestsButton guests={stayList.map(s => ({
           guest_name: s.guest_name,
           guest_email: s.guest_email,
           guest_phone: s.guest_phone,
@@ -107,6 +136,7 @@ export default async function GuestsPage() {
           room: s.room_zone_id ? (zoneMap.get(s.room_zone_id) as string | undefined) || null : null,
           notes: s.notes,
         }))} />
+        </div>
       </div>
 
       <AddGuestForm
