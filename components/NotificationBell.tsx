@@ -46,7 +46,7 @@ export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
     <div style={{ position: "relative" }}>
       <button
         onClick={() => setOpen(!open)}
-        style={{ position: "relative", padding: 6, background: "none", border: "none", cursor: "pointer", borderRadius: 8 }}
+        style={{ position: "relative", padding: 6, background: "none", border: "none", cursor: "pointer", borderRadius: 8, outline: "none", WebkitTapHighlightColor: "transparent" }}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={count > 0 ? "#8A3324" : "#8A8A8E"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -67,11 +67,11 @@ export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
 
       {open && (
         <>
-          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
+          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
           <div style={{
-            position: "absolute", top: "calc(100% + 8px)", right: 0, width: 300, zIndex: 50,
+            position: "fixed", top: 72, right: 16, width: 300, zIndex: 9999,
             background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14,
-            boxShadow: "0 12px 40px rgba(0,0,0,0.08)", overflow: "hidden",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.12)", overflow: "hidden",
           }}>
             <div style={{ padding: "12px 16px", borderBottom: "1px solid #E8E6E1", fontSize: 13, fontWeight: 500, color: "#0A0A0B" }}>
               Alerts {count > 0 && <span style={{ fontSize: 11, color: "#8A8A8E", fontWeight: 400 }}>({count})</span>}
