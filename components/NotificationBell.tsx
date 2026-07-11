@@ -43,7 +43,7 @@ export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
   const count = alerts.length;
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", zIndex: 9999 }}>
       <button
         onClick={() => setOpen(!open)}
         style={{ position: "relative", padding: 6, background: "none", border: "none", cursor: "pointer", borderRadius: 8, outline: "none", WebkitTapHighlightColor: "transparent" }}
@@ -69,7 +69,7 @@ export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
         <>
           <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
           <div style={{
-            position: "fixed", top: 72, right: 16, width: 300, zIndex: 9999,
+            position: "absolute", top: "calc(100% + 8px)", left: 0, width: 280, zIndex: 9999,
             background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14,
             boxShadow: "0 12px 40px rgba(0,0,0,0.12)", overflow: "hidden",
           }}>
