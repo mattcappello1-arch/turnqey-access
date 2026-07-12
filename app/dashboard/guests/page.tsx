@@ -5,6 +5,7 @@ import { GuestStatusButton, DeleteStayButton, CopyGuestLink } from "./GuestActio
 import { AddGuestForm } from "./AddGuestForm";
 import { ExportGuestsButton } from "./ExportGuests";
 import { GuestSearch } from "./GuestSearch";
+import { BulkImport } from "./BulkImport";
 
 export const dynamic = "force-dynamic";
 
@@ -124,8 +125,9 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
           <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Guests</h1>
           <p style={{ fontSize: 14, color: "#8A8A8E" }}>{activeStays.length} in-house · {upcomingStays.length} upcoming</p>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <GuestSearch />
+          <BulkImport siteId={siteIds[0] || ""} />
           <ExportGuestsButton guests={stayList.map(s => ({
           guest_name: s.guest_name,
           guest_email: s.guest_email,
