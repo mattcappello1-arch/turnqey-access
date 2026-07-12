@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Alert = {
@@ -12,6 +12,8 @@ type Alert = {
 export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
   const [open, setOpen] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const bellRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     async function loadAlerts() {
@@ -45,7 +47,14 @@ export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
   return (
     <div style={{ position: "relative", zIndex: 9999 }}>
       <button
-        onClick={() => setOpen(!open)}
+        ref={bellRef}
+        onClick={() => {
+          if (!open && bellRef.current) {
+            const rect = bellRef.current.getBoundingClientRect();
+            setDropdownPos({ top: rect.bottom + 8, left: rect.left });
+          }
+          setOpen(!open);
+        }}
         style={{ position: "relative", padding: 6, background: "none", border: "none", cursor: "pointer", borderRadius: 8, outline: "none", WebkitTapHighlightColor: "transparent" }}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={count > 0 ? "#8A3324" : "#8A8A8E"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -69,7 +78,7 @@ export function NotificationBell({ propertyIds }: { propertyIds: string[] }) {
         <>
           <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
           <div style={{
-            position: "absolute", top: "calc(100% + 8px)", left: 0, width: 280, zIndex: 9999,
+            position: "fixed", top: dropdownPos.top, left: dropdownPos.left, width: 280, zIndex: 9999,
             background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14,
             boxShadow: "0 12px 40px rgba(0,0,0,0.12)", overflow: "hidden",
           }}>
