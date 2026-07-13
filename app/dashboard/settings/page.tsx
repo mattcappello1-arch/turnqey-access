@@ -72,6 +72,22 @@ export default async function SettingsPage() {
           sites={siteList.map(s => ({ id: s.id, name: s.name }))}
         />
       </div>
+
+      {/* Data export */}
+      <div style={{ marginTop: 32 }}>
+        <h2 style={{ fontSize: 17, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>Data Export</h2>
+        <p style={{ fontSize: 13, color: "var(--slate)", marginBottom: 16 }}>
+          Download a complete export of your organisation data for compliance or backup.
+        </p>
+        <a
+          href="/api/export"
+          download
+          style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px", background: "var(--ink, #0A0A0B)", color: "var(--bg, #F7F5F0)", borderRadius: 10, fontSize: 13, fontWeight: 500, textDecoration: "none" }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+          Export all data (JSON)
+        </a>
+      </div>
     </div>
   );
 }

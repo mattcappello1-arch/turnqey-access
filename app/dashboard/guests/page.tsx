@@ -6,6 +6,7 @@ import { AddGuestForm } from "./AddGuestForm";
 import { ExportGuestsButton } from "./ExportGuests";
 import { GuestSearch } from "./GuestSearch";
 import { BulkImport } from "./BulkImport";
+import { GuestCalendar } from "./GuestCalendar";
 
 export const dynamic = "force-dynamic";
 
@@ -145,6 +146,19 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
         sites={(sites ?? []).map((s: { id: string; name: string }) => ({ id: s.id, name: s.name }))}
         zones={allZones}
       />
+
+      {/* Calendar view */}
+      <div style={{ marginBottom: 28 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 500, color: "var(--ink, #0A0A0B)", marginBottom: 10 }}>Calendar</h2>
+        <GuestCalendar stays={stayList.map(s => ({
+          id: s.id,
+          guest_name: s.guest_name,
+          room: s.room_zone_id ? (zoneMap.get(s.room_zone_id) as string | undefined) || null : null,
+          check_in: s.check_in,
+          check_out: s.check_out,
+          status: s.status,
+        }))} />
+      </div>
 
       {/* In-house */}
       <div style={{ marginBottom: 32 }}>
