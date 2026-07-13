@@ -11,6 +11,17 @@
   --caution: #8A3324;
 }
 
+[data-theme="dark"] {
+  --bg: #0A0A0B;
+  --surface: #141416;
+  --ink: #F7F5F0;
+  --graphite: #C8C8CB;
+  --slate: #8A8A8E;
+  --hairline: #2A2A2D;
+  --signal: #0A6E3B;
+  --caution: #8A3324;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);

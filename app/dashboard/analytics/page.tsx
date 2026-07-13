@@ -157,6 +157,69 @@ export default async function AnalyticsPage() {
           ))}
         </div>
       </div>
+
+      {/* Access heatmap */}
+      {(() => {
+        const dayNames: string[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        const heatmapData: number[][] = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
+        for (const ev of eventList) {
+          const d = new Date(ev.occurred_at);
+          const dayIndex: number = (d.getDay() + 6) % 7; // Mon=0 ... Sun=6
+          const hour: number = d.getHours();
+          heatmapData[dayIndex][hour]++;
+        }
+        const maxCount: number = Math.max(...heatmapData.flat(), 1);
+        const getColor = (count: number): string => {
+          if (count === 0) return "#E8E6E1";
+          const ratio: number = count / maxCount;
+          if (ratio <= 0.33) return "rgba(10,10,11,0.1)";
+          if (ratio <= 0.66) return "rgba(10,10,11,0.3)";
+          return "rgba(10,10,11,0.6)";
+        };
+        return (
+          <div style={{ marginTop: 24, background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, padding: 20 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 500, color: "#0A0A0B", marginBottom: 16 }}>Access heatmap</h2>
+            <div style={{ overflowX: "auto" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "40px repeat(24, 1fr)", gap: 2, minWidth: 600 }}>
+                {/* Hour labels */}
+                <div />
+                {Array.from({ length: 24 }, (_, h: number) => (
+                  <div key={`h-${h}`} style={{ fontSize: 9, color: "#8A8A8E", textAlign: "center", paddingBottom: 4 }}>{h}</div>
+                ))}
+                {/* Rows */}
+                {dayNames.map((day: string, dayIdx: number) => (
+                  <>
+                    <div key={`label-${day}`} style={{ fontSize: 11, color: "#8A8A8E", display: "flex", alignItems: "center" }}>{day}</div>
+                    {Array.from({ length: 24 }, (_, h: number) => {
+                      const count: number = heatmapData[dayIdx][h];
+                      return (
+                        <div
+                          key={`${day}-${h}`}
+                          title={`${day} ${h}:00 — ${count} event${count !== 1 ? "s" : ""}`}
+                          style={{
+                            aspectRatio: "1",
+                            borderRadius: 3,
+                            background: getColor(count),
+                            minHeight: 14,
+                            cursor: "default",
+                          }}
+                        />
+                      );
+                    })}
+                  </>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
+              <span style={{ fontSize: 10, color: "#8A8A8E" }}>Less</span>
+              {["#E8E6E1", "rgba(10,10,11,0.1)", "rgba(10,10,11,0.3)", "rgba(10,10,11,0.6)"].map((c: string) => (
+                <div key={c} style={{ width: 12, height: 12, borderRadius: 2, background: c }} />
+              ))}
+              <span style={{ fontSize: 10, color: "#8A8A8E" }}>More</span>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

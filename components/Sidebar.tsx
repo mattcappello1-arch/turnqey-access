@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { EnterpriseMemberRole } from "@/lib/types";
 import { hasPermission, type Permission } from "@/lib/permissions";
 import { NotificationBell } from "./NotificationBell";
@@ -56,16 +56,37 @@ const ROLE_LABELS: Record<string, string> = {
 export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: string; role: EnterpriseMemberRole; userEmail: string; propertyIds: string[] }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("turnqey-theme");
+    if (stored === "dark") {
+      setDark(true);
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  }, []);
+
+  function toggleTheme() {
+    const next = !dark;
+    setDark(next);
+    if (next) {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("turnqey-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("turnqey-theme", "light");
+    }
+  }
 
   const visibleItems = navItems.filter(item => !item.permission || hasPermission(role, item.permission));
 
   return (
     <>
       {/* Mobile top bar */}
-      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-14 backdrop-blur-xl border-b" style={{ background: "rgba(247,245,240,0.92)", borderColor: "#E8E6E1" }}>
-        <div style={{ fontSize: 12, fontWeight: 400, letterSpacing: "0.15em", color: "#0A0A0B", textTransform: "uppercase" }}>Turnqey Access</div>
-        <button onClick={() => setMobileOpen(!mobileOpen)} style={{ padding: 8, border: "1px solid #E8E6E1", borderRadius: 8, background: "none", cursor: "pointer" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A0A0B" strokeWidth="2" strokeLinecap="round">
+      <div className="md:hidden sticky top-0 z-40 flex items-center justify-between px-4 h-14 backdrop-blur-xl border-b" style={{ background: dark ? "rgba(10,10,11,0.92)" : "rgba(247,245,240,0.92)", borderColor: "var(--hairline)" }}>
+        <div style={{ fontSize: 12, fontWeight: 400, letterSpacing: "0.15em", color: "var(--ink)", textTransform: "uppercase" }}>Turnqey Access</div>
+        <button onClick={() => setMobileOpen(!mobileOpen)} style={{ padding: 8, border: "1px solid var(--hairline)", borderRadius: 8, background: "none", cursor: "pointer" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round">
             {mobileOpen ? <path d="M6 6l12 12M6 18L18 6" /> : <><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>}
           </svg>
         </button>
@@ -74,30 +95,30 @@ export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: st
       {/* Sidebar */}
       <aside
         className={`fixed md:sticky md:top-0 z-30 left-0 top-14 md:top-0 md:h-screen w-full md:w-60 shrink-0 border-r ${mobileOpen ? "block" : "hidden md:block"}`}
-        style={{ background: "#FFFFFF", borderColor: "#E8E6E1" }}
+        style={{ background: "var(--surface)", borderColor: "var(--hairline)" }}
       >
         <div className="h-full flex flex-col p-3 gap-0.5 overflow-y-auto">
           {/* Logo + org */}
           <div className="hidden md:flex items-center justify-between px-3 pt-4 pb-5 mb-1">
             <div>
-              <div style={{ fontSize: 11, fontWeight: 400, letterSpacing: "0.18em", color: "#0A0A0B", textTransform: "uppercase", marginBottom: 6 }}>Turnqey Access</div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: "#0A0A0B", lineHeight: 1.3 }}>{orgName}</div>
+              <div style={{ fontSize: 11, fontWeight: 400, letterSpacing: "0.18em", color: "var(--ink)", textTransform: "uppercase", marginBottom: 6 }}>Turnqey Access</div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: "var(--ink)", lineHeight: 1.3 }}>{orgName}</div>
             </div>
             <NotificationBell propertyIds={propertyIds} />
           </div>
 
           {/* Divider */}
-          <div className="hidden md:block" style={{ height: 1, background: "#E8E6E1", margin: "0 12px 8px" }} />
+          <div className="hidden md:block" style={{ height: 1, background: "var(--hairline)", margin: "0 12px 8px" }} />
 
           {/* Search shortcut */}
           <button
             onClick={() => { const ev = new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }); window.dispatchEvent(ev); }}
             className="hidden md:flex nav-item items-center gap-3 px-3 py-2 rounded-xl text-sm mb-1"
-            style={{ background: "none", border: "none", cursor: "pointer", color: "#8A8A8E", width: "100%", textAlign: "left" }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--slate)", width: "100%", textAlign: "left" }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
             <span style={{ flex: 1 }}>Search</span>
-            <kbd style={{ fontSize: 10, padding: "1px 5px", background: "#F7F5F0", border: "1px solid #E8E6E1", borderRadius: 4, color: "#8A8A8E" }}>⌘K</kbd>
+            <kbd style={{ fontSize: 10, padding: "1px 5px", background: "var(--bg)", border: "1px solid var(--hairline)", borderRadius: 4, color: "var(--slate)" }}>⌘K</kbd>
           </button>
 
           {/* Nav items */}
@@ -111,8 +132,8 @@ export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: st
                   onClick={() => setMobileOpen(false)}
                   className="nav-item relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm group"
                   style={{
-                    background: active ? "rgba(10,10,11,0.06)" : "transparent",
-                    color: active ? "#0A0A0B" : "#8A8A8E",
+                    background: active ? "rgba(128,128,128,0.1)" : "transparent",
+                    color: active ? "var(--ink)" : "var(--slate)",
                     fontWeight: active ? 500 : 400,
                   }}
                 >
@@ -124,10 +145,50 @@ export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: st
             })}
           </nav>
 
+          {/* Dark mode toggle */}
+          <div className="mt-auto px-3 pb-1">
+            <button
+              onClick={toggleTheme}
+              className="nav-item"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                width: "100%",
+                padding: "8px 12px",
+                background: "none",
+                border: "none",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: 12,
+                color: "var(--slate)",
+              }}
+            >
+              {dark ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                </svg>
+              )}
+              <span>{dark ? "Light mode" : "Dark mode"}</span>
+            </button>
+          </div>
+
           {/* Bottom: user info + logout */}
-          <div className="mt-auto pt-3 border-t" style={{ borderColor: "#E8E6E1" }}>
+          <div className="pt-3 border-t" style={{ borderColor: "var(--hairline)" }}>
             <div style={{ padding: "8px 12px" }}>
-              <div style={{ fontSize: 12, color: "#0A0A0B", fontWeight: 500, lineHeight: 1.3, marginBottom: 2 }}>{userEmail}</div>
+              <div style={{ fontSize: 12, color: "var(--ink)", fontWeight: 500, lineHeight: 1.3, marginBottom: 2 }}>{userEmail}</div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#0A6E3B" }}>
                   {ROLE_LABELS[role] || role}
@@ -139,7 +200,7 @@ export function Sidebar({ orgName, role, userEmail, propertyIds }: { orgName: st
                     await supabase.auth.signOut();
                     window.location.href = "/login";
                   }}
-                  style={{ fontSize: 11, color: "#8A8A8E", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}
+                  style={{ fontSize: 11, color: "var(--slate)", background: "none", border: "none", cursor: "pointer", padding: "2px 0" }}
                 >
                   Sign out
                 </button>

@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { LockControl } from "../LockControl";
+import { MaintenanceToggle } from "./MaintenanceToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,7 @@ export default async function LockDetailPage({ params }: { params: Promise<{ id:
   const batPct = lock.battery_level !== null ? Math.round(lock.battery_level * 100) : null;
   const isOffline = lock.is_online === false;
   const lastSync = lock.last_synced_at ? new Date(lock.last_synced_at) : null;
+  const inMaintenance: boolean = lock.maintenance_mode === true;
 
   return (
     <div>
@@ -63,7 +65,10 @@ export default async function LockDetailPage({ params }: { params: Promise<{ id:
           {lock.unit_label && <div style={{ fontSize: 14, color: "#3A3A3D", marginBottom: 4 }}>{lock.name}</div>}
           <div style={{ fontSize: 13, color: "#8A8A8E" }}>{site?.name} · {lock.manufacturer} {lock.model}</div>
         </div>
-        <LockControl lockId={lock.id} isLocked={lock.is_locked} isOnline={lock.is_online} />
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <MaintenanceToggle lockId={lock.id} initialEnabled={inMaintenance} />
+          {!inMaintenance && <LockControl lockId={lock.id} isLocked={lock.is_locked} isOnline={lock.is_online} />}
+        </div>
       </div>
 
       {/* Status cards */}

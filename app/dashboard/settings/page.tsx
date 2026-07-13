@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { SettingsForm } from "./form";
 import { SiteManager } from "./SiteManager";
+import { PmsConnections } from "./PmsConnections";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +20,28 @@ export default async function SettingsPage() {
   const linkedPropertyIds = new Set(siteList.map(s => s.property_id));
   const availableProperties = (properties ?? []).filter((p: { id: string }) => !linkedPropertyIds.has(p.id)) as { id: string; name: string }[];
 
+  // Get PMS connections for all org sites
+  const siteIds = siteList.map(s => s.id);
+  const { data: pmsRows } = siteIds.length > 0
+    ? await admin.from("pms_connections").select("*").in("site_id", siteIds).order("created_at", { ascending: false })
+    : { data: [] };
+  const pmsConnections = (pmsRows ?? []) as {
+    id: string;
+    site_id: string;
+    provider: string;
+    webhook_secret: string;
+    auto_checkin: boolean;
+    auto_checkout: boolean;
+    room_mapping: Record<string, string>;
+    last_synced_at: string | null;
+    created_at: string;
+  }[];
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Settings</h1>
-        <p style={{ fontSize: 14, color: "#8A8A8E" }}>Organisation details, sites, and branding</p>
+        <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "var(--ink)", marginBottom: 4 }}>Settings</h1>
+        <p style={{ fontSize: 14, color: "var(--slate)" }}>Organisation details, sites, and branding</p>
       </div>
 
       <SettingsForm
@@ -39,8 +57,20 @@ export default async function SettingsPage() {
 
       {/* Sites section */}
       <div style={{ marginTop: 32 }}>
-        <h2 style={{ fontSize: 17, fontWeight: 500, color: "#0A0A0B", marginBottom: 16 }}>Sites</h2>
+        <h2 style={{ fontSize: 17, fontWeight: 500, color: "var(--ink)", marginBottom: 16 }}>Sites</h2>
         <SiteManager orgId={org.id} sites={siteList} availableProperties={availableProperties} />
+      </div>
+
+      {/* PMS connections section */}
+      <div style={{ marginTop: 32 }}>
+        <h2 style={{ fontSize: 17, fontWeight: 500, color: "var(--ink)", marginBottom: 4 }}>PMS Connections</h2>
+        <p style={{ fontSize: 13, color: "var(--slate)", marginBottom: 16 }}>
+          Connect your property management system to sync reservations and automate guest access.
+        </p>
+        <PmsConnections
+          connections={pmsConnections}
+          sites={siteList.map(s => ({ id: s.id, name: s.name }))}
+        />
       </div>
     </div>
   );

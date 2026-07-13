@@ -111,7 +111,7 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
               <CopyGuestLink stayId={stay.id} />
             </>
           )}
-          <GuestStatusButton stayId={stay.id} currentStatus={stay.status} />
+          <GuestStatusButton stayId={stay.id} currentStatus={stay.status} guestName={stay.guest_name} checkIn={stay.checked_in_at || stay.check_in} checkOut={stay.check_out} />
           <DeleteStayButton stayId={stay.id} />
         </div>
       </div>
