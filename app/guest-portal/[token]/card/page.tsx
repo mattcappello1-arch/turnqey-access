@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
+import { QRCode } from "@/components/QRCode";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,13 @@ export default async function GuestCardPage({ params }: { params: Promise<{ toke
             <div style={{ fontSize: 11, color: "#8A8A8E", marginTop: 8 }}>Enter this code on the door keypad</div>
           </div>
         )}
+
+        {/* QR Code for self check-in */}
+        <div style={{ padding: "20px 28px", borderBottom: "1px solid #E8E6E1", textAlign: "center" }}>
+          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#8A8A8E", marginBottom: 10 }}>Scan to check in</div>
+          <QRCode url={`${portalUrl.replace("/guest-portal/", "/api/checkin/")}`} size={140} />
+          <div style={{ fontSize: 10, color: "#8A8A8E", marginTop: 8 }}>Scan this QR code at the lobby kiosk or with your phone</div>
+        </div>
 
         {/* NFC */}
         <div style={{ padding: "16px 28px", borderBottom: "1px solid #E8E6E1", display: "flex", alignItems: "center", gap: 10 }}>

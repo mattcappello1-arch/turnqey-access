@@ -113,6 +113,44 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
+      {/* Occupancy forecast - next 7 days */}
+      {totalRooms > 0 && (
+        <div style={{ background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, padding: 20, marginBottom: 24 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 500, color: "#0A0A0B", marginBottom: 16 }}>Occupancy forecast (next 7 days)</h2>
+          <div style={{ display: "flex", gap: 8 }}>
+            {Array.from({ length: 7 }, (_, i) => {
+              const d = new Date(Date.now() + i * 86400000);
+              const dateStr = d.toISOString().slice(0, 10);
+              const staysOnDay = stays.filter(s => {
+                const ci = new Date(s.check_in).toISOString().slice(0, 10);
+                const co = new Date(s.check_out).toISOString().slice(0, 10);
+                return ci <= dateStr && co > dateStr && ["upcoming", "checked_in"].includes(s.status);
+              }).length;
+              const pct = Math.round((staysOnDay / totalRooms) * 100);
+              const isToday = i === 0;
+              return (
+                <div key={i} style={{ flex: 1, textAlign: "center" }}>
+                  <div style={{ fontSize: 9, color: "#8A8A8E", marginBottom: 6 }}>
+                    {isToday ? "Today" : d.toLocaleDateString("en-AU", { weekday: "short" })}
+                  </div>
+                  <div style={{ height: 80, display: "flex", alignItems: "flex-end", justifyContent: "center", marginBottom: 4 }}>
+                    <div style={{
+                      width: "70%", minHeight: 4,
+                      height: `${Math.max(pct, 5)}%`,
+                      background: pct > 80 ? "#0A6E3B" : pct > 50 ? "#3A3A3D" : "#E8E6E1",
+                      borderRadius: 4,
+                      transition: "height 0.3s",
+                    }} />
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: pct > 80 ? "#0A6E3B" : "#0A0A0B" }}>{pct}%</div>
+                  <div style={{ fontSize: 9, color: "#8A8A8E" }}>{staysOnDay}/{totalRooms}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Stay breakdown */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         {/* Status breakdown */}

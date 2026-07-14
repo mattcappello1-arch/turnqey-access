@@ -4,6 +4,7 @@ import type { GuestStay, Lock } from "@/lib/types";
 import Link from "next/link";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { QuickCheckIn } from "./QuickCheckIn";
+import { LiveLockGrid } from "@/components/LiveLockStatus";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +54,8 @@ export default async function OverviewPage() {
       {/* Header */}
       <div style={{ marginBottom: isEmpty ? 16 : 32 }}>
         <h1 style={{ fontSize: 28, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>{greeting}</h1>
-        <p style={{ fontSize: 14, color: "#8A8A8E" }}>{org.name} · {(sites ?? []).length} site{(sites ?? []).length !== 1 ? "s" : ""} · {roomCount} rooms · {totalLocks} locks</p>
+        <p style={{ fontSize: 14, color: "#8A8A8E", marginBottom: 8 }}>{org.name} · {(sites ?? []).length} site{(sites ?? []).length !== 1 ? "s" : ""} · {roomCount} rooms · {totalLocks} locks</p>
+        <LiveLockGrid propertyIds={propertyIds} />
       </div>
 
       {/* Onboarding checklist for empty orgs */}
