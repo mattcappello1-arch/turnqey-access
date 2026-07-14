@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/battery-alerts",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}

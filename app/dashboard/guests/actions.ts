@@ -159,6 +159,31 @@ export async function updateGuestStayStatus(stayId: string, status: string) {
   revalidatePath("/dashboard");
 }
 
+export async function editGuestStay(data: {
+  id: string;
+  guest_name: string;
+  guest_email: string | null;
+  guest_phone: string | null;
+  check_in: string;
+  check_out: string;
+  notes: string | null;
+}) {
+  const { member } = await requireAuth();
+  if (!["admin", "manager", "front_desk"].includes(member.role)) throw new Error("Not authorised");
+
+  const admin = createAdminClient();
+  await admin.rpc("update_guest_stay_from_pms", {
+    p_stay_id: data.id,
+    p_guest_name: data.guest_name,
+    p_guest_email: data.guest_email,
+    p_guest_phone: data.guest_phone,
+    p_room_zone_id: null, // keep existing room
+    p_check_in: data.check_in,
+    p_check_out: data.check_out,
+  });
+  revalidatePath("/dashboard/guests");
+}
+
 export async function deleteGuestStay(stayId: string) {
   const { member } = await requireAuth();
   if (!["admin", "manager"].includes(member.role)) throw new Error("Not authorised");

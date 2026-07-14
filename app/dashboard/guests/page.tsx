@@ -7,6 +7,7 @@ import { ExportGuestsButton } from "./ExportGuests";
 import { GuestSearch } from "./GuestSearch";
 import { BulkImport } from "./BulkImport";
 import { GuestCalendar } from "./GuestCalendar";
+import { EditStayButton } from "./EditStay";
 
 export const dynamic = "force-dynamic";
 
@@ -112,6 +113,7 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
               <CopyGuestLink stayId={stay.id} />
             </>
           )}
+          <EditStayButton stay={{ id: stay.id, guest_name: stay.guest_name, guest_email: stay.guest_email, guest_phone: stay.guest_phone, check_in: stay.check_in, check_out: stay.check_out, notes: stay.notes }} />
           <GuestStatusButton stayId={stay.id} currentStatus={stay.status} guestName={stay.guest_name} checkIn={stay.checked_in_at || stay.check_in} checkOut={stay.check_out} />
           <DeleteStayButton stayId={stay.id} />
         </div>
