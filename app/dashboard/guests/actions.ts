@@ -100,6 +100,27 @@ export async function updateGuestStayStatus(stayId: string, status: string) {
           await admin.rpc("update_guest_stay_codes", { p_stay_id: stayId, p_code_ids: codeIds });
         }
 
+        // Try to issue mobile keys for eligible locks
+        if (stay.guest_email) {
+          for (const lockId of lockIds) {
+            try {
+              await fetch(`${turnqeyUrl}/api/mobile-keys`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${serviceKey}` },
+                body: JSON.stringify({
+                  lock_id: lockId,
+                  guest_name: stay.guest_name,
+                  guest_email: stay.guest_email,
+                  starts_at: stay.check_in,
+                  ends_at: stay.check_out,
+                }),
+              });
+            } catch {
+              // Mobile key issuance is optional — continue if it fails
+            }
+          }
+        }
+
         // Send guest email with portal link and PIN
         if (stay.guest_email) {
           const resendKey = process.env.RESEND_API_KEY;
