@@ -8,6 +8,7 @@ import { GuestSearch } from "./GuestSearch";
 import { BulkImport } from "./BulkImport";
 import { GuestCalendar } from "./GuestCalendar";
 import { EditStayButton } from "./EditStay";
+import { GuestNotes } from "./GuestNotes";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +91,7 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
             ) : null;
           })()}
           {stay.notes && <div style={{ fontSize: 11, color: "#8A8A8E", marginTop: 4 }}>{stay.notes}</div>}
+          <GuestNotes stayId={stay.id} userName="Staff" />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
           {(stay.status === "checked_in" || stay.status === "upcoming") && (

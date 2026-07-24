@@ -33,9 +33,14 @@ export default async function LocksPage() {
           <h1 style={{ fontSize: 24, fontWeight: 300, letterSpacing: -0.5, color: "#0A0A0B", marginBottom: 4 }}>Locks</h1>
           <p style={{ fontSize: 14, color: "#8A8A8E" }}>{lockList.length} locks across {(sites ?? []).length} sites</p>
         </div>
-        <a href="https://turnqey.com.au/dashboard/locks" target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", background: "#0A0A0B", color: "#F7F5F0", borderRadius: 10, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>
-          + Connect lock
-        </a>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href="/dashboard/locks/compare" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", background: "none", color: "#3A3A3D", borderRadius: 10, fontSize: 13, fontWeight: 500, textDecoration: "none", border: "1px solid #E8E6E1" }}>
+            Compare
+          </Link>
+          <a href="https://turnqey.com.au/dashboard/locks" target="_blank" rel="noopener" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", background: "#0A0A0B", color: "#F7F5F0", borderRadius: 10, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>
+            + Connect lock
+          </a>
+        </div>
       </div>
 
       {/* Stats */}

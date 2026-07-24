@@ -7,9 +7,17 @@ export default async function DocsPage() {
   const { org, member } = await requireAuth();
   const admin = createAdminClient();
 
-  // Get PMS connections for webhook URL display
+  // Get PMS connections and webhook events
   const { data: sites } = await admin.rpc("get_enterprise_sites", { p_org_id: org.id });
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://access.turnqey.com.au";
+
+  // Get recent webhook events
+  const { data: pmsConns } = await admin.rpc("get_pms_connections", { p_org_id: org.id });
+  const connIds = (pmsConns ?? []).map((c: { id: string }) => c.id);
+  const { data: webhookEvents } = connIds.length > 0
+    ? await admin.rpc("get_webhook_events", { p_connection_ids: connIds })
+    : await Promise.resolve({ data: [] });
+  const events = (webhookEvents ?? []) as { id: string; event_type: string; provider: string; status: string; error: string | null; created_at: string }[];
 
   const sections = [
     {
@@ -146,6 +154,45 @@ export default async function DocsPage() {
           </div>
         ))}
       </div>
+      {/* Webhook event log */}
+      {events.length > 0 && (
+        <div style={{ marginTop: 24, background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 14, overflow: "hidden" }}>
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid #E8E6E1" }}>
+            <h2 style={{ fontSize: 15, fontWeight: 500, color: "#0A0A0B" }}>Recent webhook events</h2>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 500 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #E8E6E1" }}>
+                  {["Time", "Event", "Provider", "Status"].map(h => (
+                    <th key={h} style={{ padding: "8px 14px", textAlign: "left", fontFamily: "'Courier New', monospace", fontSize: 10, letterSpacing: 1, textTransform: "uppercase", color: "#8A8A8E", fontWeight: 600 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {events.map(ev => (
+                  <tr key={ev.id} style={{ borderBottom: "1px solid #E8E6E1" }}>
+                    <td style={{ padding: "8px 14px", fontSize: 11, fontFamily: "'Courier New', monospace", color: "#8A8A8E" }}>
+                      {new Date(ev.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    </td>
+                    <td style={{ padding: "8px 14px" }}>
+                      <code style={{ fontSize: 11, padding: "2px 6px", background: "#F7F5F0", borderRadius: 4 }}>{ev.event_type}</code>
+                    </td>
+                    <td style={{ padding: "8px 14px", fontSize: 12, color: "#3A3A3D" }}>{ev.provider}</td>
+                    <td style={{ padding: "8px 14px" }}>
+                      <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 6px", borderRadius: 4,
+                        background: ev.status === "processed" ? "rgba(10,110,59,0.08)" : "rgba(138,50,36,0.08)",
+                        color: ev.status === "processed" ? "#0A6E3B" : "#8A3324",
+                      }}>{ev.status}</span>
+                      {ev.error && <div style={{ fontSize: 10, color: "#8A3324", marginTop: 2 }}>{ev.error}</div>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
