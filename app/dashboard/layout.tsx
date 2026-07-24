@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { CommandPalette } from "@/components/CommandPalette";
 import { KeyboardHelp } from "@/components/KeyboardHelp";
 import { ToastProvider } from "@/components/Toast";
+import { SessionTimeout } from "@/components/SessionTimeout";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { org, member, email } = await requireAuth();
@@ -21,6 +22,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </main>
         <CommandPalette />
         <KeyboardHelp />
+        <SessionTimeout />
       </div>
     </ToastProvider>
   );
