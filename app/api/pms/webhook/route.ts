@@ -152,6 +152,16 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Log webhook event
+  await admin.rpc("log_webhook_event", {
+    p_connection_id: connection.id,
+    p_event_type: event.event_type,
+    p_provider: event.provider,
+    p_payload: { reservation_id: event.reservation_id, guest_name: event.guest_name, room: event.room_number },
+    p_status: "processed",
+    p_error: null,
+  });
+
   // Update last synced
   await admin.rpc("update_pms_last_synced", { p_connection_id: connection.id });
 

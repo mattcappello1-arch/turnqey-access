@@ -28,7 +28,7 @@ export default async function Home() {
         </p>
         <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
           <Link href="/login" style={{ padding: "14px 32px", background: "#0A0A0B", color: "#F7F5F0", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
-          <a href="https://turnqey.com.au" style={{ padding: "14px 32px", background: "transparent", color: "#3A3A3D", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid #E8E6E1" }}>Learn more</a>
+          <Link href="/demo" style={{ padding: "14px 32px", background: "transparent", color: "#3A3A3D", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid #E8E6E1" }}>See demo</Link>
         </div>
       </section>
 
