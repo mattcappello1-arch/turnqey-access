@@ -35,12 +35,32 @@ type Tab = "overview" | "locks" | "guests" | "portal";
 
 export default function DemoPage() {
   const [tab, setTab] = useState<Tab>("overview");
+  const [locks, setLocks] = useState(DEMO_LOCKS);
+  const [guests, setGuests] = useState(DEMO_GUESTS);
+  const [unlocking, setUnlocking] = useState<string | null>(null);
+  const [checkingIn, setCheckingIn] = useState<string | null>(null);
 
-  const locked = DEMO_LOCKS.filter(l => l.is_locked).length;
-  const online = DEMO_LOCKS.filter(l => l.is_online).length;
-  const lowBat = DEMO_LOCKS.filter(l => l.battery_level < 0.2).length;
-  const inHouse = DEMO_GUESTS.filter(g => g.status === "checked_in").length;
-  const upcoming = DEMO_GUESTS.filter(g => g.status === "upcoming").length;
+  function handleToggleLock(id: string) {
+    setUnlocking(id);
+    setTimeout(() => {
+      setLocks(prev => prev.map(l => l.id === id ? { ...l, is_locked: !l.is_locked } : l));
+      setUnlocking(null);
+    }, 1200);
+  }
+
+  function handleCheckIn(id: string) {
+    setCheckingIn(id);
+    setTimeout(() => {
+      setGuests(prev => prev.map(g => g.id === id ? { ...g, status: "checked_in", pin: String(Math.floor(100000 + Math.random() * 900000)) } : g));
+      setCheckingIn(null);
+    }, 1500);
+  }
+
+  const locked = locks.filter(l => l.is_locked).length;
+  const online = locks.filter(l => l.is_online).length;
+  const lowBat = locks.filter(l => l.battery_level < 0.2).length;
+  const inHouse = guests.filter(g => g.status === "checked_in").length;
+  const upcoming = guests.filter(g => g.status === "upcoming").length;
 
   return (
     <div style={{ minHeight: "100vh", background: "#F7F5F0" }}>
@@ -138,10 +158,13 @@ export default function DemoPage() {
         {/* Locks */}
         {tab === "locks" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
-            {DEMO_LOCKS.map(lock => {
+            {locks.map(lock => {
               const batPct = Math.round(lock.battery_level * 100);
+              const isUnlocking = unlocking === lock.id;
               return (
-                <div key={lock.id} style={{
+                <div key={lock.id} onClick={() => lock.is_online && handleToggleLock(lock.id)} style={{
+                  cursor: lock.is_online ? "pointer" : "default", transition: "all 0.2s",
+                  transform: isUnlocking ? "scale(0.97)" : "scale(1)",
                   padding: "14px 12px", background: "#FFFFFF", border: `1px solid ${!lock.is_online ? "#8A332430" : "#E8E6E1"}`,
                   borderRadius: 12, opacity: !lock.is_online ? 0.6 : 1,
                 }}>
@@ -166,7 +189,7 @@ export default function DemoPage() {
         {/* Guests */}
         {tab === "guests" && (
           <div style={{ background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 12, overflow: "hidden" }}>
-            {DEMO_GUESTS.map((g, i) => (
+            {guests.map((g, i) => (
               <div key={g.id} style={{ padding: "14px 18px", borderTop: i > 0 ? "1px solid #E8E6E1" : "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -187,7 +210,13 @@ export default function DemoPage() {
                   )}
                 </div>
                 {g.status === "upcoming" && (
-                  <button style={{ padding: "6px 14px", background: "#0A6E3B", color: "#FFFFFF", border: "none", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Check in</button>
+                  <button
+                    onClick={() => handleCheckIn(g.id)}
+                    disabled={checkingIn === g.id}
+                    style={{ padding: "6px 14px", background: "#0A6E3B", color: "#FFFFFF", border: "none", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: checkingIn === g.id ? "not-allowed" : "pointer", opacity: checkingIn === g.id ? 0.5 : 1 }}
+                  >
+                    {checkingIn === g.id ? "Generating PIN..." : "Check in"}
+                  </button>
                 )}
               </div>
             ))}

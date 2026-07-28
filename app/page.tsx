@@ -62,12 +62,39 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ROI + Pricing links */}
+      <section style={{ maxWidth: 700, margin: "0 auto", padding: "0 5% 60px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <Link href="/roi" style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 24px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 16, textDecoration: "none" }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(10,10,11,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A0A0B" strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#0A0A0B" }}>ROI calculator</div>
+              <div style={{ fontSize: 12, color: "#8A8A8E" }}>See how much you will save</div>
+            </div>
+          </Link>
+          <Link href="/pricing" style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 24px", background: "#FFFFFF", border: "1px solid #E8E6E1", borderRadius: 16, textDecoration: "none" }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(10,10,11,0.04)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A0A0B" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: "#0A0A0B" }}>Pricing</div>
+              <div style={{ fontSize: 12, color: "#8A8A8E" }}>From $15/door/month</div>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* CTA */}
       <section style={{ maxWidth: 600, margin: "0 auto", padding: "0 5% 100px", textAlign: "center" }}>
         <div style={{ padding: "48px 40px", background: "#0A0A0B", borderRadius: 20 }}>
           <h2 style={{ fontSize: 24, fontWeight: 300, color: "#F7F5F0", letterSpacing: -0.5, marginBottom: 12 }}>Ready to manage access at scale?</h2>
           <p style={{ fontSize: 14, color: "#8A8A8E", marginBottom: 24 }}>Set up your first property in minutes.</p>
-          <Link href="/login" style={{ display: "inline-block", padding: "14px 36px", background: "#F7F5F0", color: "#0A0A0B", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
+          <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
+            <Link href="/login" style={{ display: "inline-block", padding: "14px 36px", background: "#F7F5F0", color: "#0A0A0B", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
+            <Link href="/roi" style={{ display: "inline-block", padding: "14px 36px", background: "transparent", color: "#F7F5F0", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid rgba(247,245,240,0.3)" }}>Calculate ROI</Link>
+          </div>
         </div>
       </section>
 
