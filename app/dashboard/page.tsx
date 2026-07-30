@@ -120,7 +120,7 @@ export default async function OverviewPage() {
       </div>
 
       {/* Two-column layout: check-ins + alerts */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid-cols-1 md:grid-cols-2">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
 
         {/* Today's check-ins */}
         <div>

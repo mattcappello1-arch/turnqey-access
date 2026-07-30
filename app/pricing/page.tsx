@@ -116,7 +116,7 @@ export default function PricingPage() {
                 ))}
               </div>
 
-              <Link href={plan.href} style={{
+              <Link href={plan.href} className="btn-animate" style={{
                 display: "block", padding: "14px 16px", borderRadius: 12, fontSize: 14, fontWeight: 600,
                 textDecoration: "none", textAlign: "center",
                 background: plan.style === "primary" ? "#0A0A0B" : "transparent",

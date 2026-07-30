@@ -27,8 +27,8 @@ export default async function Home() {
           Manage access across hotels, apartments, and accommodation properties. NFC unlock, auto-expiring codes, multi-zone access, real-time monitoring.
         </p>
         <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
-          <Link href="/login" style={{ padding: "14px 32px", background: "#0A0A0B", color: "#F7F5F0", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
-          <Link href="/demo" style={{ padding: "14px 32px", background: "transparent", color: "#3A3A3D", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid #E8E6E1" }}>See demo</Link>
+          <Link href="/login" className="btn-animate" style={{ padding: "14px 32px", background: "#0A0A0B", color: "#F7F5F0", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
+          <Link href="/demo" className="card-hover" style={{ padding: "14px 32px", background: "transparent", color: "#3A3A3D", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid #E8E6E1" }}>See demo</Link>
         </div>
       </section>
 
@@ -92,8 +92,8 @@ export default async function Home() {
           <h2 style={{ fontSize: 24, fontWeight: 300, color: "#F7F5F0", letterSpacing: -0.5, marginBottom: 12 }}>Ready to manage access at scale?</h2>
           <p style={{ fontSize: 14, color: "#8A8A8E", marginBottom: 24 }}>Set up your first property in minutes.</p>
           <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
-            <Link href="/login" style={{ display: "inline-block", padding: "14px 36px", background: "#F7F5F0", color: "#0A0A0B", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
-            <Link href="/roi" style={{ display: "inline-block", padding: "14px 36px", background: "transparent", color: "#F7F5F0", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid rgba(247,245,240,0.3)" }}>Calculate ROI</Link>
+            <Link href="/login" className="btn-animate" style={{ display: "inline-block", padding: "14px 36px", background: "#F7F5F0", color: "#0A0A0B", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Get started</Link>
+            <Link href="/roi" className="btn-animate" style={{ display: "inline-block", padding: "14px 36px", background: "transparent", color: "#F7F5F0", borderRadius: 12, fontSize: 15, fontWeight: 500, textDecoration: "none", border: "1px solid rgba(247,245,240,0.3)" }}>Calculate ROI</Link>
           </div>
         </div>
       </section>
