@@ -22,7 +22,7 @@ export default function ROIPage() {
   const staffTimeSaved = monthlyTimeSavedHrs * staffHourlyRate;
   const totalMonthlySavings = staffTimeSaved + monthlySavedCallouts;
 
-  const pricePerDoor = doors > 100 ? 12 : doors > 20 ? 15 : 19;
+  const pricePerDoor = doors > 100 ? 17 : doors > 20 ? 20 : 24;
   const monthlyCost = doors * pricePerDoor;
   const netSavings = totalMonthlySavings - monthlyCost;
   const roi = monthlyCost > 0 ? Math.round((netSavings / monthlyCost) * 100) : 0;

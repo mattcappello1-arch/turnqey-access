@@ -80,7 +80,7 @@ export default async function Home() {
             </div>
             <div>
               <div style={{ fontSize: 14, fontWeight: 500, color: "#0A0A0B" }}>Pricing</div>
-              <div style={{ fontSize: 12, color: "#8A8A8E" }}>From $15/door/month</div>
+              <div style={{ fontSize: 12, color: "#8A8A8E" }}>From $20/door/month</div>
             </div>
           </Link>
         </div>

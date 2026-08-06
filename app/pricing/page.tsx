@@ -4,7 +4,7 @@ const PLANS = [
   {
     name: "Starter",
     desc: "For small properties getting started with smart access.",
-    price: "19",
+    price: "24",
     period: "/door /mo",
     sub: "Up to 20 doors",
     features: [
@@ -22,7 +22,7 @@ const PLANS = [
   {
     name: "Professional",
     desc: "For hotels and serviced apartments with multiple zones.",
-    price: "15",
+    price: "20",
     period: "/door /mo",
     sub: "Up to 100 doors",
     popular: true,
